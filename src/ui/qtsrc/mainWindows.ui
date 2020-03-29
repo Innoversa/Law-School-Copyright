@@ -194,13 +194,13 @@ color:rgb(255,255,255);</string>
       <property name="title">
        <string>Scraping Attributes</string>
       </property>
-      <widget class="QWidget" name="">
+      <widget class="QWidget" name="layoutWidget">
        <property name="geometry">
         <rect>
-         <x>30</x>
+         <x>10</x>
          <y>20</y>
-         <width>351</width>
-         <height>19</height>
+         <width>511</width>
+         <height>20</height>
         </rect>
        </property>
        <layout class="QHBoxLayout" name="horizontalLayout">
@@ -247,13 +247,13 @@ color:rgb(255,255,255);</string>
       <property name="title">
        <string>Scraping Source</string>
       </property>
-      <widget class="QWidget" name="">
+      <widget class="QWidget" name="layoutWidget">
        <property name="geometry">
         <rect>
-         <x>30</x>
+         <x>10</x>
          <y>20</y>
-         <width>128</width>
-         <height>19</height>
+         <width>511</width>
+         <height>20</height>
         </rect>
        </property>
        <layout class="QHBoxLayout" name="horizontalLayout_2">
