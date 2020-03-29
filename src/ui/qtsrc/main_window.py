@@ -14,6 +14,16 @@ import os
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
+        self.widget_titles={
+            'songs':{
+                'sources':['Youtube','Spotify'],
+                'attributes':['View/Play Count', 'Duration', 'Thumbs Up','Thumbs Down']
+            },
+            'books': {
+                'sources': ['Amazon', 'Google Books'],
+                'attributes': ['Paper Copy Price', 'Paper Price Variance', 'Electronic Copy Price', 'Electronic Price Variance']
+            }
+        }
         self.cwd=os.getcwd()
         self.MainWindow=MainWindow
         MainWindow.setObjectName("MainWindow")
@@ -81,18 +91,18 @@ class Ui_MainWindow(object):
         self.horizontalLayout = QtWidgets.QHBoxLayout(self.layoutWidget)
         self.horizontalLayout.setContentsMargins(0, 0, 0, 0)
         self.horizontalLayout.setObjectName("horizontalLayout")
-        self.checkBox_3 = QtWidgets.QCheckBox(self.layoutWidget)
-        self.checkBox_3.setObjectName("checkBox_3")
-        self.horizontalLayout.addWidget(self.checkBox_3)
-        self.checkBox_4 = QtWidgets.QCheckBox(self.layoutWidget)
-        self.checkBox_4.setObjectName("checkBox_4")
-        self.horizontalLayout.addWidget(self.checkBox_4)
-        self.checkBox_5 = QtWidgets.QCheckBox(self.layoutWidget)
-        self.checkBox_5.setObjectName("checkBox_5")
-        self.horizontalLayout.addWidget(self.checkBox_5)
-        self.checkBox_6 = QtWidgets.QCheckBox(self.layoutWidget)
-        self.checkBox_6.setObjectName("checkBox_6")
-        self.horizontalLayout.addWidget(self.checkBox_6)
+        self.attribute_checkBox_1 = QtWidgets.QCheckBox(self.layoutWidget)
+        self.attribute_checkBox_1.setObjectName("checkBox_3")
+        self.horizontalLayout.addWidget(self.attribute_checkBox_1)
+        self.attribute_checkBox_2 = QtWidgets.QCheckBox(self.layoutWidget)
+        self.attribute_checkBox_2.setObjectName("checkBox_4")
+        self.horizontalLayout.addWidget(self.attribute_checkBox_2)
+        self.attribute_checkBox_3 = QtWidgets.QCheckBox(self.layoutWidget)
+        self.attribute_checkBox_3.setObjectName("checkBox_5")
+        self.horizontalLayout.addWidget(self.attribute_checkBox_3)
+        self.attribute_checkBox_4 = QtWidgets.QCheckBox(self.layoutWidget)
+        self.attribute_checkBox_4.setObjectName("checkBox_6")
+        self.horizontalLayout.addWidget(self.attribute_checkBox_4)
         self.groupBox = QtWidgets.QGroupBox(self.frame)
         self.groupBox.setGeometry(QtCore.QRect(30, 50, 531, 51))
         self.groupBox.setObjectName("groupBox")
@@ -102,12 +112,12 @@ class Ui_MainWindow(object):
         self.horizontalLayout_2 = QtWidgets.QHBoxLayout(self.layoutWidget1)
         self.horizontalLayout_2.setContentsMargins(0, 0, 0, 0)
         self.horizontalLayout_2.setObjectName("horizontalLayout_2")
-        self.checkBox = QtWidgets.QCheckBox(self.layoutWidget1)
-        self.checkBox.setObjectName("checkBox")
-        self.horizontalLayout_2.addWidget(self.checkBox)
-        self.checkBox_2 = QtWidgets.QCheckBox(self.layoutWidget1)
-        self.checkBox_2.setObjectName("checkBox_2")
-        self.horizontalLayout_2.addWidget(self.checkBox_2)
+        self.source_checkBox_1 = QtWidgets.QCheckBox(self.layoutWidget1)
+        self.source_checkBox_1.setObjectName("checkBox")
+        self.horizontalLayout_2.addWidget(self.source_checkBox_1)
+        self.source_checkBox_2 = QtWidgets.QCheckBox(self.layoutWidget1)
+        self.source_checkBox_2.setObjectName("checkBox_2")
+        self.horizontalLayout_2.addWidget(self.source_checkBox_2)
         self.settings_label = QtWidgets.QLabel(self.frame)
         self.settings_label.setGeometry(QtCore.QRect(30, 10, 91, 21))
         self.settings_label.setStyleSheet("font: 10pt \"Segoe UI\";")
@@ -147,7 +157,7 @@ class Ui_MainWindow(object):
         self.songs_radio.setChecked(True)
         self.songsUi()
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
-        #self.set_button_group()
+
     def connect_ui_signals(self):
         self.books_radio.clicked.connect(self.slot_books_radio_clicked)
         self.songs_radio.clicked.connect(self.slot_songs_radio_clicked)
@@ -170,36 +180,32 @@ class Ui_MainWindow(object):
         self.type_button_group.addButton(self.songs_radio,1)
 
         self.source_button_group = QtWidgets.QButtonGroup()
-        self.source_button_group.addButton(self.checkBox,0)
-        self.source_button_group.addButton(self.checkBox_2,1)
+        self.source_button_group.addButton(self.source_checkBox_1, 0)
+        self.source_button_group.addButton(self.source_checkBox_2, 1)
 
         self.attribute_button_group = QtWidgets.QButtonGroup()
-        self.attribute_button_group.addButton(self.checkBox_3,0)
-        self.attribute_button_group.addButton(self.checkBox_4,1)
-        self.attribute_button_group.addButton(self.checkBox_5,2)
-        self.attribute_button_group.addButton(self.checkBox_6,3)
+        self.attribute_button_group.addButton(self.attribute_checkBox_1, 0)
+        self.attribute_button_group.addButton(self.attribute_checkBox_2, 1)
+        self.attribute_button_group.addButton(self.attribute_checkBox_3, 2)
+        self.attribute_button_group.addButton(self.attribute_checkBox_4, 3)
 
     def booksUi(self):
         _translate = QtCore.QCoreApplication.translate
-        self.groupBox_2.setTitle(_translate("MainWindow", "Scraping Attributes"))
-        self.checkBox_3.setText(_translate("MainWindow", "Paper Copy Price"))
-        self.checkBox_4.setText(_translate("MainWindow", "Paper Price Variance"))
-        self.checkBox_5.setText(_translate("MainWindow", "Electronic Copy Price"))
-        self.checkBox_6.setText(_translate("MainWindow", "Electronic Price Variance"))
-        self.groupBox.setTitle(_translate("MainWindow", "Scraping Source"))
-        self.checkBox.setText(_translate("MainWindow", "Amazon"))
-        self.checkBox_2.setText(_translate("MainWindow", "Google Books"))
+        self.attribute_checkBox_1.setText(_translate("MainWindow", self.widget_titles['books']['attributes'][0]))
+        self.attribute_checkBox_2.setText(_translate("MainWindow", self.widget_titles['books']['attributes'][1]))
+        self.attribute_checkBox_3.setText(_translate("MainWindow", self.widget_titles['books']['attributes'][2]))
+        self.attribute_checkBox_4.setText(_translate("MainWindow", self.widget_titles['books']['attributes'][3]))
+        self.source_checkBox_1.setText(_translate("MainWindow", self.widget_titles['books']['sources'][0]))
+        self.source_checkBox_2.setText(_translate("MainWindow", self.widget_titles['books']['sources'][1]))
 
     def songsUi(self):
         _translate = QtCore.QCoreApplication.translate
-        self.groupBox_2.setTitle(_translate("MainWindow", "Scraping Attributes"))
-        self.checkBox_3.setText(_translate("MainWindow", "View/Play Count"))
-        self.checkBox_4.setText(_translate("MainWindow", "Duration"))
-        self.checkBox_5.setText(_translate("MainWindow", "Thumbs Up"))
-        self.checkBox_6.setText(_translate("MainWindow", "Thumbs Down"))
-        self.groupBox.setTitle(_translate("MainWindow", "Scraping Source"))
-        self.checkBox.setText(_translate("MainWindow", "Youtube"))
-        self.checkBox_2.setText(_translate("MainWindow", "Spotify"))
+        self.attribute_checkBox_1.setText(_translate("MainWindow", self.widget_titles['songs']['attributes'][0]))
+        self.attribute_checkBox_2.setText(_translate("MainWindow", self.widget_titles['songs']['attributes'][1]))
+        self.attribute_checkBox_3.setText(_translate("MainWindow", self.widget_titles['songs']['attributes'][2]))
+        self.attribute_checkBox_4.setText(_translate("MainWindow", self.widget_titles['songs']['attributes'][3]))
+        self.source_checkBox_1.setText(_translate("MainWindow", self.widget_titles['songs']['sources'][0]))
+        self.source_checkBox_2.setText(_translate("MainWindow", self.widget_titles['songs']['sources'][1]))
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
