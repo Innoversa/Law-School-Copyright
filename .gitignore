@@ -1,4 +1,7 @@
 .idea/
+src/sample_data
+
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -129,3 +132,6 @@ dmypy.json
 # Pyre type checker
 .pyre/
 src/test.xlsx
+src/ui/qtsrc/mainWindows - Copy.ui
+src/ui/qtsrc/output.py
+src/Untitled.ipynb

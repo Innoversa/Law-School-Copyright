@@ -4,6 +4,7 @@ from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 from ui.qtsrc.main_window import Ui_MainWindow
+from modules.spreadsheet_reader import read_spreadsheet
 import sys
 
 class controller(QMainWindow, Ui_MainWindow):
@@ -17,7 +18,9 @@ class controller(QMainWindow, Ui_MainWindow):
 
     def slot_start_button_clicked(self):
         QMessageBox.warning(self, 'Not Implemented', "Scraping functions has not implemented yet.")
-        print(self.get_all_input_information())
+        # For testing:
+        #print(self.get_all_input_information())
+        #read_spreadsheet(self.get_all_input_information()['input_file_path'])
 
     def get_all_input_information(self):
         """
