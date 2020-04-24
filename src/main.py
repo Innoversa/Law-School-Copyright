@@ -1,5 +1,5 @@
 from PyQt5.QtWidgets import *
-from ui.qtsrc.controller import controller
+from controller import controller
 import sys
 
 

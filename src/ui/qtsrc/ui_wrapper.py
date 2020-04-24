@@ -5,6 +5,8 @@ from ui.qtsrc.main_window import Ui_MainWindow
 from PyQt5.QtWidgets import QFileDialog
 
 class UiWrapper(Ui_MainWindow):
+    # def __init__(self):
+    #     pass
     def connect_ui_signals(self):
         self.books_radio.clicked.connect(self.slot_books_radio_clicked)
         self.songs_radio.clicked.connect(self.slot_songs_radio_clicked)
@@ -44,6 +46,8 @@ class UiWrapper(Ui_MainWindow):
         self.attribute_checkBox_4.setText(_translate("MainWindow", self.widget_titles['songs']['attributes'][3]))
         self.source_checkBox_1.setText(_translate("MainWindow", self.widget_titles['songs']['sources'][0]))
         self.source_checkBox_2.setText(_translate("MainWindow", self.widget_titles['songs']['sources'][1]))
+    def update_progress_bar(self,percentage):
+        self.progressBar.setValue(percentage)
 
     def set_button_group(self):
         self.type_button_group = QtWidgets.QButtonGroup()
@@ -60,6 +64,12 @@ class UiWrapper(Ui_MainWindow):
         self.attribute_button_group.addButton(self.attribute_checkBox_3, 2)
         self.attribute_button_group.addButton(self.attribute_checkBox_4, 3)
 
+    def initialize_widget_values(self):
+        self.progressBar.setValue(0)
+
+    def update_progress_bar(self, n):
+        self.progressBar.setValue(n)
+
     def initialize_Ui(self):
         self.widget_titles={
             'songs':{
@@ -73,6 +83,7 @@ class UiWrapper(Ui_MainWindow):
         }
         self.cwd=os.getcwd()
         self.setupUi(self)
+        self.initialize_widget_values()
         self.connect_ui_signals()
         self.songs_radio.setChecked(True)
-        #self.songsUi()
+        self.songsUi()
