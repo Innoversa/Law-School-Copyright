@@ -3,14 +3,15 @@ from PyQt5.QtWidgets import QMainWindow, QApplication
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
-from ui.qtsrc.main_window import Ui_MainWindow
+from ui.qtsrc.ui_wrapper import UiWrapper
 from modules.spreadsheet_reader import read_spreadsheet
 import sys
 
-class controller(QMainWindow, Ui_MainWindow):
+
+class controller(QMainWindow, UiWrapper):
     def __init__(self, parent=None):
         super(controller, self).__init__(parent)
-        self.setupUi(self)
+        self.initialize_Ui()
         self.connect_logic_signals()
 
     def connect_logic_signals(self):
