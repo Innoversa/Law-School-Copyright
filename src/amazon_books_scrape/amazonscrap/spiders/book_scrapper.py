@@ -5,16 +5,36 @@ from scrapy import signals
 # to run : scrapy crawl book-scraper
 class BooksSpider(scrapy.Spider):
     name = "book-scraper"
-    start_urls = [
-        'https://www.amazon.com/15-Invaluable-Laws-Growth-Potential/dp/B009KF1JXI/ref=pd_vtpd_14_2/146-8950855-9827903?_encoding=UTF8&pd_rd_i=B009KF1JXI&pd_rd_r=7686f2a6-6f92-4657-9bdb-cf960ff286d4&pd_rd_w=XD2CI&pd_rd_wg=dOfwP&pf_rd_p=be9253e2-366d-447b-83fa-e044efea8928&pf_rd_r=P551JA4BJQ11BEXH4B68&psc=1&refRID=P551JA4BJQ11BEXH4B68'
-        ,'https://www.amazon.com/Python-Crash-Course-Hands-Project-Based-ebook/dp/B018UXJ9RI/ref=sr_1_4?dchild=1&keywords=python+crash&qid=1587273440&sr=8-4'
-        ,'https://www.amazon.com/Success-Principles-TM-Anniversary-Where/dp/0062364286/ref=sr_1_3?crid=8LPPMYAIAM2Y&dchild=1&keywords=success+principles+canfield&qid=1587279182&sprefix=success+pri%2Caps%2C186&sr=8-3'
-        # ,'https://www.amazon.com/Python-Crash-Course-Hands-Project-Based-ebook/dp/B018UXJ9RI/ref=sr_1_4?dchild=1&keywords=python+crash&qid=1587273440&sr=8-4'
-    ]
+    
+    def start_requests(self):
+        search_base = 'https://www.amazon.com/s?k='
+        book_names = ['What Every BODY Is Saying: An Ex-FBI Agent’s Guide to Speed-Reading People',
+                      'Louder Than Words: Take Your Career from Average to Exceptional with the Hidden Power of Nonverbal Intelligence']
 
-    books_already_scrapped = list()
-
+        for names in book_names:
+            yield scrapy.Request(url=search_base + names, callback=self.parse)
+    
     def parse(self, response):
+        
+
+        book_link = response.css('div[data-index="1"]')
+        # book_link = book_link.css('div[class="sg-row"]')
+        book_link = book_link.css('a[class="a-link-normal"]').get()
+        
+        link_pos = book_link.find('href')
+        
+        link_start = book_link.find('"',link_pos+1)
+        link_end = book_link.find('"',link_start+1)
+        
+        
+        book_page = book_link[link_start+1:link_end]
+        base_link = "https://www.amazon.com/"
+        book_page = base_link + book_page
+        
+        yield scrapy.Request(book_page, callback=self.parse_book)
+        
+    def parse_book(self, response):
+        
         book = {}
         
         title = response.css('span[class="a-size-extra-large"]::text').get()
