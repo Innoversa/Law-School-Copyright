@@ -1,0 +1,9 @@
+Steps to run the amazon book scraper_
+
+1.	install scrapy -
+	pip install Scrapy==1.5.0
+
+2.	move to ..\amazon_books_scrape\amazonscrap
+
+3.	run the spider crawler as -
+	scrapy crawl book-scraper
