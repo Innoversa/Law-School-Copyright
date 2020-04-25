@@ -7,6 +7,7 @@ from ui.qtsrc.ui_wrapper import UiWrapper
 from modules.spreadsheet_reader import read_spreadsheet
 import sys
 import time
+import os
 from modules.thread_worker import Worker
 
 class controller(QMainWindow, UiWrapper):
