@@ -42,13 +42,13 @@ def get_video_stats(youtube, vidId):
 # Grabs/gets the credentials in order to use the YT api
 # There should be a pickle file which does this automatically
 def get_credentials():
-    if os.path.exists("picklefile"):
-        with open("picklefile", 'rb') as f:
+    if os.path.exists("api_keys/yt_picklefile"):
+        with open("api_keys/yt_picklefile", 'rb') as f:
             credentials = pickle.load(f)
     else:
-        flow = google_auth_oauthlib.flow.InstalledAppFlow.from_client_secrets_file("secret.json", ["https://www.googleapis.com/auth/youtube.force-ssl"])
+        flow = google_auth_oauthlib.flow.InstalledAppFlow.from_client_secrets_file("api_keys/yt_secret.json", ["https://www.googleapis.com/auth/youtube.force-ssl"])
         credentials = flow.run_console()
-        with open("picklefile", 'wb') as f:
+        with open("api_keys/yt_picklefile", 'wb') as f:
             pickle.dump(credentials, f)
     return credentials
 
@@ -61,7 +61,8 @@ def process_dataframe(df):
         youtube = googleapiclient.discovery.build("youtube", "v3", credentials=get_credentials())
         for i in df.index:
             # Get video ID of top result
-            query = df['Title'][i] + " " + df['Artist'][i]
+            #print(df)
+            query = df['title'][i] + " " + df['artist'][i]
             request = youtube.search().list(part="snippet", maxResults=3, q=query)
             response = request.execute()
             print(query)
@@ -78,7 +79,7 @@ def process_dataframe(df):
 
             vidId2 = response['items'][1]['id']['videoId']
             stats2 = get_video_stats(youtube, vidId2)
-            df.at[i,'Title 2'] = response['items'][1['snippet']['title']
+            df.at[i,'Title 2'] = response['items'][1]['snippet']['title']
             df.at[i,'videoID 2'] = response['items'][1]['id']['videoId']
             df.at[i,'Views 2'] = stats2[0]
             df.at[i,'Duration 2'] = stats2[1]
@@ -93,7 +94,8 @@ def process_dataframe(df):
             df.at[i,'Duration 3'] = stats3[1]
             df.at[i,'Thumbs Up 3'] = stats3[2]
             df.at[i,'Thumbs Down 3'] = stats3[3]
-    except:
+    except Exception as e:
+        print(e)
         print("An exception occured. High likely quota limit. Saving whatever has been read")
     
     
@@ -101,7 +103,10 @@ def process_dataframe(df):
 
 # Takes a dictionary where keys are sheet names (Excel file)
 # Values are pandas dataframes
-def get_youtube_data(sheets):
+def get_youtube_data(sheets,progress_callback):
+    i=0
     for key, value in sheets.items():
         sheets[key] = process_dataframe(value)
+        progress_callback.emit(int(i*100/len(sheets)))
+    progress_callback.emit(100)
     return sheets

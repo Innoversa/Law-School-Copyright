@@ -9,7 +9,7 @@ import sys
 import time
 import os
 from modules.thread_worker import Worker
-
+from yt_scrape.myYT import get_youtube_data
 class controller(QMainWindow, UiWrapper):
     def __init__(self, parent=None):
         super(controller, self).__init__(parent)
@@ -27,6 +27,9 @@ class controller(QMainWindow, UiWrapper):
         return None
 
     def print_output(self, o):
+        for k in o:
+            o[k].to_csv('test.csv')
+            print('writeTOFile')
         print(o)
 
     def thread_finished(self):
@@ -36,9 +39,9 @@ class controller(QMainWindow, UiWrapper):
         QMessageBox.warning(self, 'Not Implemented', "Scraping functions has not implemented yet. "
                                                      "Results are for testing only.")
         # For testing:
-        #print(self.get_all_input_information())
-        #read_spreadsheet(self.get_all_input_information()['input_file_path'])
-        worker = Worker(self.test_func)
+        print(self.get_all_input_information())
+        df=read_spreadsheet(self.get_all_input_information()['input_file_path'])
+        worker = Worker(get_youtube_data,df)
         worker.signals.result.connect(self.print_output)
         worker.signals.finished.connect(self.thread_finished)
         worker.signals.progress.connect(self.update_progress_bar)
