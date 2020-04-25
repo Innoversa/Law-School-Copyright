@@ -10,6 +10,9 @@ import google_auth_oauthlib.flow
 import googleapiclient.discovery
 import googleapiclient.errors
 
+# Gets the views, duration, likes, and dislikes from a video.
+# Performs a YT api call which uses about 5 units per request
+# Called onto every video
 def get_video_stats(youtube, vidId):
     # Two different requests
     req1 = youtube.videos().list(part='snippet,contentDetails', id=vidId)
@@ -36,6 +39,8 @@ def get_video_stats(youtube, vidId):
 
     return (views, duration, likes, dislikes)
 
+# Grabs/gets the credentials in order to use the YT api
+# There should be a pickle file which does this automatically
 def get_credentials():
     if os.path.exists("picklefile"):
         with open("picklefile", 'rb') as f:
@@ -47,6 +52,9 @@ def get_credentials():
             pickle.dump(credentials, f)
     return credentials
 
+# Fill the dataframe here after querying YT results
+# There's a good chance you'll hit the quota right now
+# If there's a error, save whatever has been scraped
 def process_dataframe(df):
     try:
         # Sets up youtube API portion here
@@ -91,6 +99,8 @@ def process_dataframe(df):
     
     return df
 
+# Takes a dictionary where keys are sheet names (Excel file)
+# Values are pandas dataframes
 def get_youtube_data(sheets):
     for key, value in sheets.items():
         sheets[key] = process_dataframe(value)
