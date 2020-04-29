@@ -2,6 +2,9 @@
 # API key a791ebdea3b7ba81ff4bd70cff591244
 # Shared secret b3efda8cad1b0041281caffe3430a0c9
 # Registered to law-school-copy
+
+# To use this, please supply a csv file and then run it
+# please pip install xlrd, pandas, requests-cache
 import requests
 import json
 import pandas as pd
@@ -70,27 +73,27 @@ def jprint(obj):
     text = json.dumps(obj, sort_keys=True, indent=4)
     return text
 
-
-asd = {
-    # 'method': 'artist.getTopTags',
-    # 'artist':  'The Beach Boys'
-    'method': 'track.getInfo',
-    'autocorrect': 1,
-    'track':  "The End of the World",
-    'artist': 'Skeeter Davis'}
-dsa = {
-    # 'method': 'artist.getTopTags',
-    # 'artist':  'The Beach Boys'
-    'method': 'track.getInfo',
-    'autocorrect': 1,
-    'track':  "Surfin\' U.S.A.",
-    'artist': 'The Beach Boys'}
-# intake is a dict
-
-aasd = [asd, dsa]
-for each in aasd:
-    print(each)
-    r = lastfm_get(each)
+#
+# asd = {
+#     # 'method': 'artist.getTopTags',
+#     # 'artist':  'The Beach Boys'
+#     'method': 'track.getInfo',
+#     'autocorrect': 1,
+#     'track':  "The End of the World",
+#     'artist': 'Skeeter Davis'}
+# dsa = {
+#     # 'method': 'artist.getTopTags',
+#     # 'artist':  'The Beach Boys'
+#     'method': 'track.getInfo',
+#     'autocorrect': 1,
+#     'track':  "Surfin\' U.S.A.",
+#     'artist': 'The Beach Boys'}
+# # intake is a dict
+#
+# aasd = [asd, dsa]
+# for each in aasd:
+#     print(each)
+#     r = lastfm_get(each)
 
 request_query = load_data_from_excel('Year-end Hot 100 1963-1964.xlsx')
 for each in request_query:
