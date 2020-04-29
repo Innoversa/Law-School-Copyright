@@ -5,6 +5,7 @@ Team Member: Chen Liang, Fengqiao Wang, Joseph Cisneros, David Qin, Paul Quek, A
 
 
 Welcome to the Law-School-Copyright wiki!
+
 ### Dependencies:
 `pip install pandas`
 
@@ -15,3 +16,9 @@ Welcome to the Law-School-Copyright wiki!
 `pip install pandas`
 
 `pip install xlrd`
+
+`pip install PyQt5`
+
+`pip install google_auth_oauthlib`
+
+`pip install google-api-python-client` 
