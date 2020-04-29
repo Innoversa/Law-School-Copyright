@@ -73,6 +73,23 @@ def jprint(obj):
     text = json.dumps(obj, sort_keys=True, indent=4)
     return text
 
+
+def perform_last_fm(data):
+    df = pd.DataFrame(data, columns=['Title', 'Artist'])
+    request_query = []
+    req = {}
+    for index, row in df.iterrows():
+        req['method'] = 'track.getInfo'
+        req['autocorrect'] = 1
+        req['track'] = row['Title'][1:-1]
+        req['artist'] = row['Artist']
+        request_query.append(req)
+        req = {}
+    for each in request_query:
+        print(each)
+        lastfm_get(each)
+    return request_query
+
 #
 # asd = {
 #     # 'method': 'artist.getTopTags',
@@ -95,10 +112,12 @@ def jprint(obj):
 #     print(each)
 #     r = lastfm_get(each)
 
-request_query = load_data_from_excel('Year-end Hot 100 1963-1964.xlsx')
-for each in request_query:
-    print(each)
-    r = lastfm_get(each)
+data = pd.read_excel(r'Year-end Hot 100 1963-1964.xlsx')
+perform_last_fm(data)
+# request_query = load_data_from_excel()
+# for each in request_query:
+#     print(each)
+#     r = lastfm_get(each)
 
 # print(jprint(r.json()))
 
@@ -118,4 +137,7 @@ for each in request_query:
 #     print(each)
 #     count += each['count']
 #
+
+
+
 
