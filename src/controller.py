@@ -3,24 +3,50 @@ from PyQt5.QtWidgets import QMainWindow, QApplication
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
-from ui.qtsrc.main_window import Ui_MainWindow
+from ui.qtsrc.ui_wrapper import UiWrapper
 from modules.spreadsheet_reader import read_spreadsheet
 import sys
-
-class controller(QMainWindow, Ui_MainWindow):
+import time
+import os
+from modules.thread_worker import Worker
+from yt_scrape.myYT import get_youtube_data
+# import last_fm.last_fm_main
+class controller(QMainWindow, UiWrapper):
     def __init__(self, parent=None):
         super(controller, self).__init__(parent)
-        self.setupUi(self)
+        self.initialize_Ui()
         self.connect_logic_signals()
+        self.threadpool = QThreadPool()
 
     def connect_logic_signals(self):
         self.start_button.clicked.connect(self.slot_start_button_clicked)
 
+    def test_func(self,progress_callback):
+        for i in range(20):
+            time.sleep(1)
+            progress_callback.emit((i+1) * 5)
+        return None
+
+    def print_output(self, o):
+        for k in o:
+            o[k].to_csv('test.csv')
+            print('writeTOFile')
+        print(o)
+
+    def thread_finished(self):
+        print("Finished")
+
     def slot_start_button_clicked(self):
-        QMessageBox.warning(self, 'Not Implemented', "Scraping functions has not implemented yet.")
+        QMessageBox.warning(self, 'Not Implemented', "Scraping functions has not implemented yet. "
+                                                     "Results are for testing only.")
         # For testing:
-        #print(self.get_all_input_information())
-        #read_spreadsheet(self.get_all_input_information()['input_file_path'])
+        print(self.get_all_input_information())
+        df=read_spreadsheet(self.get_all_input_information()['input_file_path'])
+        #worker = Worker(get_youtube_data, df)
+        worker.signals.result.connect(self.print_output)
+        worker.signals.finished.connect(self.thread_finished)
+        worker.signals.progress.connect(self.update_progress_bar)
+        self.threadpool.start(worker)
 
     def get_all_input_information(self):
         """

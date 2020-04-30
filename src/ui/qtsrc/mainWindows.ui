@@ -138,7 +138,7 @@ color:rgb(255,255,255);</string>
     <property name="frameShadow">
      <enum>QFrame::Raised</enum>
     </property>
-    <widget class="QLabel" name="input_label">
+    <widget class="QLabel" name="io_title_label">
      <property name="geometry">
       <rect>
        <x>30</x>
@@ -167,7 +167,7 @@ color:rgb(255,255,255);</string>
       <string>__________________________________________________________________________________________</string>
      </property>
     </widget>
-    <widget class="QFrame" name="frame">
+    <widget class="QFrame" name="settings_frame">
      <property name="geometry">
       <rect>
        <x>0</x>
@@ -182,7 +182,7 @@ color:rgb(255,255,255);</string>
      <property name="frameShadow">
       <enum>QFrame::Raised</enum>
      </property>
-     <widget class="QGroupBox" name="groupBox_2">
+     <widget class="QGroupBox" name="attributes_groupBox">
       <property name="geometry">
        <rect>
         <x>30</x>
@@ -235,7 +235,7 @@ color:rgb(255,255,255);</string>
        </layout>
       </widget>
      </widget>
-     <widget class="QGroupBox" name="groupBox">
+     <widget class="QGroupBox" name="source_groupBox">
       <property name="geometry">
        <rect>
         <x>30</x>
@@ -274,7 +274,7 @@ color:rgb(255,255,255);</string>
        </layout>
       </widget>
      </widget>
-     <widget class="QLabel" name="settings_label">
+     <widget class="QLabel" name="settings_title_label">
       <property name="geometry">
        <rect>
         <x>30</x>
@@ -304,16 +304,16 @@ color:rgb(255,255,255);</string>
       </property>
      </widget>
      <zorder>holine2</zorder>
-     <zorder>groupBox_2</zorder>
-     <zorder>groupBox</zorder>
-     <zorder>settings_label</zorder>
+     <zorder>attributes_groupBox</zorder>
+     <zorder>source_groupBox</zorder>
+     <zorder>settings_title_label</zorder>
     </widget>
-    <widget class="QLabel" name="label">
+    <widget class="QLabel" name="input_path_label">
      <property name="geometry">
       <rect>
        <x>60</x>
        <y>70</y>
-       <width>301</width>
+       <width>391</width>
        <height>16</height>
       </rect>
      </property>
@@ -321,10 +321,10 @@ color:rgb(255,255,255);</string>
       <string>Please select input xlsx file...</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="browse_button">
+    <widget class="QPushButton" name="browse_input_button">
      <property name="geometry">
       <rect>
-       <x>420</x>
+       <x>470</x>
        <y>70</y>
        <width>75</width>
        <height>23</height>
@@ -366,12 +366,12 @@ color:rgb(255,255,255);</string>
       <number>24</number>
      </property>
     </widget>
-    <widget class="QLabel" name="label_output">
+    <widget class="QLabel" name="output_path_label">
      <property name="geometry">
       <rect>
        <x>60</x>
        <y>100</y>
-       <width>301</width>
+       <width>391</width>
        <height>16</height>
       </rect>
      </property>
@@ -379,10 +379,10 @@ color:rgb(255,255,255);</string>
       <string>Please select output directory...</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="browse_button_out">
+    <widget class="QPushButton" name="browse_output_button">
      <property name="geometry">
       <rect>
-       <x>420</x>
+       <x>470</x>
        <y>100</y>
        <width>75</width>
        <height>23</height>
@@ -396,14 +396,14 @@ color:rgb(255,255,255);</string>
      </property>
     </widget>
     <zorder>holine</zorder>
-    <zorder>input_label</zorder>
-    <zorder>frame</zorder>
-    <zorder>label</zorder>
-    <zorder>browse_button</zorder>
+    <zorder>io_title_label</zorder>
+    <zorder>settings_frame</zorder>
+    <zorder>input_path_label</zorder>
+    <zorder>browse_input_button</zorder>
     <zorder>start_button</zorder>
     <zorder>progressBar</zorder>
-    <zorder>label_output</zorder>
-    <zorder>browse_button_out</zorder>
+    <zorder>output_path_label</zorder>
+    <zorder>browse_output_button</zorder>
    </widget>
   </widget>
  </widget>

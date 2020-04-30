@@ -7,25 +7,9 @@
 # WARNING! All changes made in this file will be lost!
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtGui import *
-from PyQt5.QtWidgets import *
-from PyQt5.QtCore import *
-import os
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
-        self.widget_titles={
-            'songs':{
-                'sources':['Youtube','Spotify'],
-                'attributes':['View/Play Count', 'Duration', 'Thumbs Up','Thumbs Down']
-            },
-            'books': {
-                'sources': ['Amazon', 'Google Books'],
-                'attributes': ['Paper Copy Price', 'Paper Price Variance', 'Electronic Copy Price', 'Electronic Price Variance']
-            }
-        }
-        self.cwd=os.getcwd()
-        self.MainWindow=MainWindow
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(800, 400)
         icon = QtGui.QIcon()
@@ -70,22 +54,22 @@ class Ui_MainWindow(object):
         self.right_frame.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.right_frame.setFrameShadow(QtWidgets.QFrame.Raised)
         self.right_frame.setObjectName("right_frame")
-        self.input_label = QtWidgets.QLabel(self.right_frame)
-        self.input_label.setGeometry(QtCore.QRect(30, 30, 91, 21))
-        self.input_label.setStyleSheet("font: 10pt \"Segoe UI\";")
-        self.input_label.setObjectName("input_label")
+        self.io_title_label = QtWidgets.QLabel(self.right_frame)
+        self.io_title_label.setGeometry(QtCore.QRect(30, 30, 91, 21))
+        self.io_title_label.setStyleSheet("font: 10pt \"Segoe UI\";")
+        self.io_title_label.setObjectName("io_title_label")
         self.holine = QtWidgets.QLabel(self.right_frame)
         self.holine.setGeometry(QtCore.QRect(30, 40, 561, 20))
         self.holine.setObjectName("holine")
-        self.frame = QtWidgets.QFrame(self.right_frame)
-        self.frame.setGeometry(QtCore.QRect(0, 120, 611, 181))
-        self.frame.setFrameShape(QtWidgets.QFrame.StyledPanel)
-        self.frame.setFrameShadow(QtWidgets.QFrame.Raised)
-        self.frame.setObjectName("frame")
-        self.groupBox_2 = QtWidgets.QGroupBox(self.frame)
-        self.groupBox_2.setGeometry(QtCore.QRect(30, 110, 531, 51))
-        self.groupBox_2.setObjectName("groupBox_2")
-        self.layoutWidget = QtWidgets.QWidget(self.groupBox_2)
+        self.settings_frame = QtWidgets.QFrame(self.right_frame)
+        self.settings_frame.setGeometry(QtCore.QRect(0, 120, 611, 181))
+        self.settings_frame.setFrameShape(QtWidgets.QFrame.StyledPanel)
+        self.settings_frame.setFrameShadow(QtWidgets.QFrame.Raised)
+        self.settings_frame.setObjectName("settings_frame")
+        self.attributes_groupBox = QtWidgets.QGroupBox(self.settings_frame)
+        self.attributes_groupBox.setGeometry(QtCore.QRect(30, 110, 531, 51))
+        self.attributes_groupBox.setObjectName("attributes_groupBox")
+        self.layoutWidget = QtWidgets.QWidget(self.attributes_groupBox)
         self.layoutWidget.setGeometry(QtCore.QRect(10, 20, 511, 20))
         self.layoutWidget.setObjectName("layoutWidget")
         self.horizontalLayout = QtWidgets.QHBoxLayout(self.layoutWidget)
@@ -103,10 +87,10 @@ class Ui_MainWindow(object):
         self.attribute_checkBox_4 = QtWidgets.QCheckBox(self.layoutWidget)
         self.attribute_checkBox_4.setObjectName("attribute_checkBox_4")
         self.horizontalLayout.addWidget(self.attribute_checkBox_4)
-        self.groupBox = QtWidgets.QGroupBox(self.frame)
-        self.groupBox.setGeometry(QtCore.QRect(30, 50, 531, 51))
-        self.groupBox.setObjectName("groupBox")
-        self.layoutWidget1 = QtWidgets.QWidget(self.groupBox)
+        self.source_groupBox = QtWidgets.QGroupBox(self.settings_frame)
+        self.source_groupBox.setGeometry(QtCore.QRect(30, 50, 531, 51))
+        self.source_groupBox.setObjectName("source_groupBox")
+        self.layoutWidget1 = QtWidgets.QWidget(self.source_groupBox)
         self.layoutWidget1.setGeometry(QtCore.QRect(10, 20, 511, 20))
         self.layoutWidget1.setObjectName("layoutWidget1")
         self.horizontalLayout_2 = QtWidgets.QHBoxLayout(self.layoutWidget1)
@@ -118,24 +102,24 @@ class Ui_MainWindow(object):
         self.source_checkBox_2 = QtWidgets.QCheckBox(self.layoutWidget1)
         self.source_checkBox_2.setObjectName("source_checkBox_2")
         self.horizontalLayout_2.addWidget(self.source_checkBox_2)
-        self.settings_label = QtWidgets.QLabel(self.frame)
-        self.settings_label.setGeometry(QtCore.QRect(30, 10, 91, 21))
-        self.settings_label.setStyleSheet("font: 10pt \"Segoe UI\";")
-        self.settings_label.setObjectName("settings_label")
-        self.holine2 = QtWidgets.QLabel(self.frame)
+        self.settings_title_label = QtWidgets.QLabel(self.settings_frame)
+        self.settings_title_label.setGeometry(QtCore.QRect(30, 10, 91, 21))
+        self.settings_title_label.setStyleSheet("font: 10pt \"Segoe UI\";")
+        self.settings_title_label.setObjectName("settings_title_label")
+        self.holine2 = QtWidgets.QLabel(self.settings_frame)
         self.holine2.setGeometry(QtCore.QRect(30, 20, 561, 20))
         self.holine2.setObjectName("holine2")
         self.holine2.raise_()
-        self.groupBox_2.raise_()
-        self.groupBox.raise_()
-        self.settings_label.raise_()
+        self.attributes_groupBox.raise_()
+        self.source_groupBox.raise_()
+        self.settings_title_label.raise_()
         self.input_path_label = QtWidgets.QLabel(self.right_frame)
-        self.input_path_label.setGeometry(QtCore.QRect(60, 70, 301, 16))
-        self.input_path_label.setObjectName("label")
-        self.browse_button = QtWidgets.QPushButton(self.right_frame)
-        self.browse_button.setGeometry(QtCore.QRect(420, 70, 75, 23))
-        self.browse_button.setStyleSheet("background-color: rgb(255, 255, 255);")
-        self.browse_button.setObjectName("browse_button")
+        self.input_path_label.setGeometry(QtCore.QRect(60, 70, 391, 16))
+        self.input_path_label.setObjectName("input_path_label")
+        self.browse_input_button = QtWidgets.QPushButton(self.right_frame)
+        self.browse_input_button.setGeometry(QtCore.QRect(470, 70, 75, 23))
+        self.browse_input_button.setStyleSheet("background-color: rgb(255, 255, 255);")
+        self.browse_input_button.setObjectName("browse_input_button")
         self.start_button = QtWidgets.QPushButton(self.right_frame)
         self.start_button.setGeometry(QtCore.QRect(420, 320, 75, 23))
         self.start_button.setStyleSheet("background-color: rgb(255, 255, 255);")
@@ -145,76 +129,25 @@ class Ui_MainWindow(object):
         self.progressBar.setProperty("value", 24)
         self.progressBar.setObjectName("progressBar")
         self.output_path_label = QtWidgets.QLabel(self.right_frame)
-        self.output_path_label.setGeometry(QtCore.QRect(60, 100, 301, 16))
-        self.output_path_label.setObjectName("label_output")
-        self.browse_button_out = QtWidgets.QPushButton(self.right_frame)
-        self.browse_button_out.setGeometry(QtCore.QRect(420, 100, 75, 23))
-        self.browse_button_out.setStyleSheet("background-color: rgb(255, 255, 255);")
-        self.browse_button_out.setObjectName("browse_button_out")
+        self.output_path_label.setGeometry(QtCore.QRect(60, 100, 391, 16))
+        self.output_path_label.setObjectName("output_path_label")
+        self.browse_output_button = QtWidgets.QPushButton(self.right_frame)
+        self.browse_output_button.setGeometry(QtCore.QRect(470, 100, 75, 23))
+        self.browse_output_button.setStyleSheet("background-color: rgb(255, 255, 255);")
+        self.browse_output_button.setObjectName("browse_output_button")
         self.holine.raise_()
-        self.input_label.raise_()
-        self.frame.raise_()
+        self.io_title_label.raise_()
+        self.settings_frame.raise_()
         self.input_path_label.raise_()
-        self.browse_button.raise_()
+        self.browse_input_button.raise_()
         self.start_button.raise_()
         self.progressBar.raise_()
         self.output_path_label.raise_()
-        self.browse_button_out.raise_()
+        self.browse_output_button.raise_()
         MainWindow.setCentralWidget(self.centralwidget)
-        self.connect_ui_signals()
+
         self.retranslateUi(MainWindow)
-        self.songs_radio.setChecked(True)
-        self.songsUi()
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
-
-    def connect_ui_signals(self):
-        self.books_radio.clicked.connect(self.slot_books_radio_clicked)
-        self.songs_radio.clicked.connect(self.slot_songs_radio_clicked)
-        self.browse_button.clicked.connect(self.slot_select_button_clicked)
-
-    def slot_select_button_clicked(self):
-        file_chosen, _ = QFileDialog.getOpenFileName(self, 'Select input file')
-        if file_chosen != "":
-            self.input_path_label.setText(file_chosen)
-
-    def slot_books_radio_clicked(self):
-        self.booksUi()
-
-    def slot_songs_radio_clicked(self):
-        self.songsUi()
-
-    def set_button_group(self):
-        self.type_button_group = QtWidgets.QButtonGroup()
-        self.type_button_group.addButton(self.books_radio,0)
-        self.type_button_group.addButton(self.songs_radio,1)
-
-        self.source_button_group = QtWidgets.QButtonGroup()
-        self.source_button_group.addButton(self.source_checkBox_1, 0)
-        self.source_button_group.addButton(self.source_checkBox_2, 1)
-
-        self.attribute_button_group = QtWidgets.QButtonGroup()
-        self.attribute_button_group.addButton(self.attribute_checkBox_1, 0)
-        self.attribute_button_group.addButton(self.attribute_checkBox_2, 1)
-        self.attribute_button_group.addButton(self.attribute_checkBox_3, 2)
-        self.attribute_button_group.addButton(self.attribute_checkBox_4, 3)
-
-    def booksUi(self):
-        _translate = QtCore.QCoreApplication.translate
-        self.attribute_checkBox_1.setText(_translate("MainWindow", self.widget_titles['books']['attributes'][0]))
-        self.attribute_checkBox_2.setText(_translate("MainWindow", self.widget_titles['books']['attributes'][1]))
-        self.attribute_checkBox_3.setText(_translate("MainWindow", self.widget_titles['books']['attributes'][2]))
-        self.attribute_checkBox_4.setText(_translate("MainWindow", self.widget_titles['books']['attributes'][3]))
-        self.source_checkBox_1.setText(_translate("MainWindow", self.widget_titles['books']['sources'][0]))
-        self.source_checkBox_2.setText(_translate("MainWindow", self.widget_titles['books']['sources'][1]))
-
-    def songsUi(self):
-        _translate = QtCore.QCoreApplication.translate
-        self.attribute_checkBox_1.setText(_translate("MainWindow", self.widget_titles['songs']['attributes'][0]))
-        self.attribute_checkBox_2.setText(_translate("MainWindow", self.widget_titles['songs']['attributes'][1]))
-        self.attribute_checkBox_3.setText(_translate("MainWindow", self.widget_titles['songs']['attributes'][2]))
-        self.attribute_checkBox_4.setText(_translate("MainWindow", self.widget_titles['songs']['attributes'][3]))
-        self.source_checkBox_1.setText(_translate("MainWindow", self.widget_titles['songs']['sources'][0]))
-        self.source_checkBox_2.setText(_translate("MainWindow", self.widget_titles['songs']['sources'][1]))
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
@@ -224,32 +157,22 @@ class Ui_MainWindow(object):
         self.type_group.setTitle(_translate("MainWindow", "Type"))
         self.books_radio.setText(_translate("MainWindow", "Books"))
         self.songs_radio.setText(_translate("MainWindow", "Songs"))
-        self.input_label.setText(_translate("MainWindow", "Input/Output"))
+        self.io_title_label.setText(_translate("MainWindow", "Input/Output"))
         self.holine.setText(_translate("MainWindow", "__________________________________________________________________________________________"))
-        self.groupBox_2.setTitle(_translate("MainWindow", "Scraping Attributes"))
+        self.attributes_groupBox.setTitle(_translate("MainWindow", "Scraping Attributes"))
         self.attribute_checkBox_1.setText(_translate("MainWindow", "View/Play Count"))
         self.attribute_checkBox_2.setText(_translate("MainWindow", "Duration"))
         self.attribute_checkBox_3.setText(_translate("MainWindow", "Thumbs Up"))
         self.attribute_checkBox_4.setText(_translate("MainWindow", "Thumbs Down"))
-        self.groupBox.setTitle(_translate("MainWindow", "Scraping Source"))
+        self.source_groupBox.setTitle(_translate("MainWindow", "Scraping Source"))
         self.source_checkBox_1.setText(_translate("MainWindow", "Youtube"))
         self.source_checkBox_2.setText(_translate("MainWindow", "Spotify"))
-        self.settings_label.setText(_translate("MainWindow", "Settings"))
+        self.settings_title_label.setText(_translate("MainWindow", "Settings"))
         self.holine2.setText(_translate("MainWindow", "__________________________________________________________________________________________"))
         self.input_path_label.setText(_translate("MainWindow", "Please select input xlsx file..."))
-        self.browse_button.setText(_translate("MainWindow", "Browse.."))
+        self.browse_input_button.setText(_translate("MainWindow", "Browse.."))
         self.start_button.setText(_translate("MainWindow", "Start"))
         self.output_path_label.setText(_translate("MainWindow", "Please select output directory..."))
-        self.browse_button_out.setText(_translate("MainWindow", "Browse.."))
+        self.browse_output_button.setText(_translate("MainWindow", "Browse.."))
 
-    def get_current_values(self):
-        pass
 import ui.qtsrc.resources_rc
-import sys
-if __name__ == "__main__":
-    app = QtWidgets.QApplication(sys.argv)
-    MainWindow = QtWidgets.QMainWindow()
-    ui = Ui_MainWindow()
-    ui.setupUi(MainWindow)
-    MainWindow.show()
-    sys.exit(app.exec_())
