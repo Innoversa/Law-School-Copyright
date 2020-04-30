@@ -112,7 +112,7 @@ def perform_last_fm(data,progress_callback):
         out_dict.update(lastfm_get(each))
         out_query.append(out_dict)
         out_dict = {}
-        i+=0
+        i+=1
 
     print(out_query)
     out_df = pd.DataFrame(out_query)
