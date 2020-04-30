@@ -89,16 +89,16 @@ def jprint(obj):
 
 
 def perform_last_fm(data):
-    df = pd.DataFrame(data, columns=['Title', 'Artist'])
+    df = pd.DataFrame(data, columns=['title', 'artist'])
     print(df)
     request_query = []
     req = {}
     for index, row in df.iterrows():
         req['method'] = 'track.getInfo'
         req['autocorrect'] = 1
-        print('track,', row['Title'])
-        req['track'] = row['Title'][1:-1]
-        req['artist'] = row['Artist']
+        print('track,', row['title'])
+        req['track'] = row['title'][1:-1]
+        req['artist'] = row['artist']
         request_query.append(req)
         req = {}
     out_query = []
