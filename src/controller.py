@@ -43,7 +43,6 @@ class controller(QMainWindow, UiWrapper):
         self.update_progress_bar(0)
         ui_input=self.get_all_input_information()
         print(ui_input)
-        #TODO: Remove True
         if self.validate_input_info(ui_input):
             df_dict=read_spreadsheet(self.get_all_input_information()['input_file_path'])
             if ui_input['type']=='books':
