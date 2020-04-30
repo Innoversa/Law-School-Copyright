@@ -8,6 +8,7 @@
 import requests
 import json
 import pandas as pd
+import xlsxwriter
 
 
 def load_data_from_excel(csv_input):
@@ -26,22 +27,29 @@ def load_data_from_excel(csv_input):
     return request_query
 
 
-def convert(seconds):
-    seconds = seconds % (24 * 3600)
-    hour = seconds // 3600
-    seconds %= 3600
-    minutes = seconds // 60
-    seconds %= 60
-    return "%d:%02d:%02d" % (hour, minutes, seconds)
+def convert(millis):
+    # millis = int(millis)
+    seconds = (millis / 1000) % 60
+    seconds = int(seconds)
+    minutes = (millis / (1000 * 60)) % 60
+    minutes = int(minutes)
+    # hours = (millis / (1000 * 60 * 60)) % 24
+    return ("%02d:%02d" % (minutes, seconds))
+    # seconds = seconds % (24 * 3600)
+    # hour = seconds // 3600
+    # seconds %= 3600
+    # minutes = seconds // 60
+    # seconds %= 60
+    # return "%d:%02d:%02d" % (hour, minutes, seconds)
 
 
 def count_listeners(data_json):
-    print(jprint(data_json))
+    # print(jprint(data_json))
     out_p = {}
     if 'track' in data_json:
         count = data_json['track']['playcount']
         listener = data_json['track']['listeners']
-        duration = int(data_json['track']['duration'])
+        duration = convert(int(data_json['track']['duration']))
         # for each in data_json['track']['playcount']['track']:
         #     count = count + int(each['listeners'])
         #     # print(each['listeners'], each['name'])
@@ -82,11 +90,13 @@ def jprint(obj):
 
 def perform_last_fm(data):
     df = pd.DataFrame(data, columns=['Title', 'Artist'])
+    print(df)
     request_query = []
     req = {}
     for index, row in df.iterrows():
         req['method'] = 'track.getInfo'
         req['autocorrect'] = 1
+        print('track,', row['Title'])
         req['track'] = row['Title'][1:-1]
         req['artist'] = row['Artist']
         request_query.append(req)
@@ -109,12 +119,12 @@ def perform_last_fm(data):
 
 def perform_last_fm_s(data, progress_callback):
     out_put = {}
-    i = 0
+    writer = pd.ExcelWriter('output.xlsx', engine='xlsxwriter')
     for each in data:
-        print('asd')
-        i = i+1
-        out_df = (perform_last_fm(each))
-        out_df.to_excel('output.xlsx', sheet_name=i)
+        print(data[each])
+        out_df = (perform_last_fm(data[each]))
+        out_df.to_excel(writer, sheet_name=each)
+    writer.save()
 
 #
 # asd = {
@@ -138,8 +148,11 @@ def perform_last_fm_s(data, progress_callback):
 #     print(each)
 #     r = lastfm_get(each)
 if __name__ == "__main__":
-    data = pd.read_excel(r'Year-end Hot 100 1963-1964.xlsx')
-    perform_last_fm_s(data)
+    data = pd.read_excel(r'Year-end Hot 100 1963-1964.xlsx', sheet_name=None)
+    # for each in data:
+    #     print(data[each])
+    perform_last_fm_s(data, 'aaa')
+    # perform_last_fm(data)
 # request_query = load_data_from_excel()
 # for each in request_query:
 #     print(each)
