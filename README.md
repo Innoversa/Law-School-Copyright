@@ -22,3 +22,5 @@ Welcome to the Law-School-Copyright wiki!
 `pip install google_auth_oauthlib`
 
 `pip install google-api-python-client` 
+
+`pip install openpyxl`

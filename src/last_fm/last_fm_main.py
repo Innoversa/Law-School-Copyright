@@ -36,19 +36,25 @@ def convert(seconds):
 
 
 def count_listeners(data_json):
-    # print(jprint(data_json))
+    print(jprint(data_json))
     out_p = {}
     if 'track' in data_json:
         count = data_json['track']['playcount']
         listener = data_json['track']['listeners']
-        duration = convert(int(data_json['track']['duration']))
+        duration = int(data_json['track']['duration'])
         # for each in data_json['track']['playcount']['track']:
         #     count = count + int(each['listeners'])
         #     # print(each['listeners'], each['name'])
-        print('count is', count, "listener is", listener, 'duration is', duration)
+        # print('count is', count, "listener is", listener, 'duration is', duration)
+        out_p['playcount'] = int(count)
+        out_p['listeners'] = int(listener)
+        out_p['duration'] = duration
     else:
-        print("not found")
-
+        # print("not found")
+        out_p['playcount'] = -1
+        out_p['listeners'] = -1
+        out_p['duration'] = -1
+    return out_p
 
 def lastfm_get(payload):
     API_KEY = 'a791ebdea3b7ba81ff4bd70cff591244'
@@ -62,10 +68,10 @@ def lastfm_get(payload):
     payload['format'] = 'json'
 
     response = requests.get(url, headers=headers, params=payload)
-    print(payload['artist'], payload['track'])
+    # print(payload['artist'], payload['track'])
     text = response.json()
-    count_listeners(text)
-    return response
+    out_dict = count_listeners(text)
+    return out_dict
 
 
 def jprint(obj):
@@ -85,10 +91,29 @@ def perform_last_fm(data):
         req['artist'] = row['Artist']
         request_query.append(req)
         req = {}
+    out_query = []
+    out_dict = {}
     for each in request_query:
-        print(each)
-        lastfm_get(each)
-    return request_query
+        out_dict['artist'] = each['artist']
+        out_dict['track'] = each['track']
+        # print(each)
+        out_dict.update(lastfm_get(each))
+        out_query.append(out_dict)
+        out_dict = {}
+    print(out_query)
+    out_df = pd.DataFrame(out_query)
+    print(out_df)
+    print(out_df.dtypes)
+    return out_df
+
+
+def perform_last_fm_s(data):
+    out_put = {}
+    i = 0
+    for each in data:
+        i = i+1
+        out_df = (perform_last_fm(each))
+        out_df.to_excel('output.xlsx', sheet_name=i)
 
 #
 # asd = {
@@ -113,7 +138,7 @@ def perform_last_fm(data):
 #     r = lastfm_get(each)
 
 data = pd.read_excel(r'Year-end Hot 100 1963-1964.xlsx')
-perform_last_fm(data)
+perform_last_fm_s(data)
 # request_query = load_data_from_excel()
 # for each in request_query:
 #     print(each)

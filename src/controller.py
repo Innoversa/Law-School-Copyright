@@ -10,7 +10,7 @@ import time
 import os
 from modules.thread_worker import Worker
 from yt_scrape.myYT import get_youtube_data
-import last_fm.last_fm_main
+# import last_fm.last_fm_main
 class controller(QMainWindow, UiWrapper):
     def __init__(self, parent=None):
         super(controller, self).__init__(parent)
