@@ -21,3 +21,7 @@ Welcome to the Law-School-Copyright wiki!
 `pip install google-api-python-client` 
 
 `pip install openpyxl`
+
+`pip install scrapy`
+
+`pip install xlsxwriter`
