@@ -40,17 +40,18 @@ class controller(QMainWindow, UiWrapper):
         print("Finished")
     def slot_start_button_clicked(self):
 
-
+        self.update_progress_bar(0)
         ui_input=self.get_all_input_information()
         print(ui_input)
-        #TODO: Remove True
-        if True or self.validate_input_info(ui_input):
+        if self.validate_input_info(ui_input):
             df_dict=read_spreadsheet(self.get_all_input_information()['input_file_path'])
             if ui_input['type']=='books':
                 #os.system(r'cd amazon_books_scrape\amazonscrap\ & scrapy crawl book-scraper')
                 #kw={'ttr':'asd', 'progress_callback':}
-                p = Process(target=start_crawler, args=(df_dict, None))
+                p = Process(target=start_crawler, args=(df_dict, ui_input['output_file_path'],None))
                 p.start()
+
+                self.update_progress_bar(100)
                 #p.join()
 
                 # try:
@@ -72,12 +73,12 @@ class controller(QMainWindow, UiWrapper):
                     self.threadpool.start(worker_yt)
                 if 'Spotify' in ui_input['sources']:
                     print('spotify')
-                    # worker_fm = Worker(self.test_worker)
                     worker_fm = Worker(perform_last_fm_s, df_dict)
                     worker_fm.signals.result.connect(self.print_output)
                     worker_fm.signals.finished.connect(self.thread_finished)
                     worker_fm.signals.progress.connect(self.update_progress_bar)
                     self.threadpool.start(worker_fm)
+
     def test_worker(self,progress_callback):
         for i in range(0,10):
             time.sleep(1)

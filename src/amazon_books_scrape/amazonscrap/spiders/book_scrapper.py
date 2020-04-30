@@ -111,7 +111,7 @@ class BooksSpider(scrapy.Spider):
 current_df=[]
 scrape_result={}
 
-def start_crawler(df_dict, progress_callback):
+def start_crawler(df_dict, output_path,progress_callback):
     tmp_r=[k for k in scrape_result]
     for key in tmp_r: del scrape_result[key]
 
@@ -137,4 +137,4 @@ def start_crawler(df_dict, progress_callback):
         for book_price_type in scrape_result[title]:
             dfo.loc[i,book_price_type]=scrape_result[title][book_price_type].strip().replace('$','')
         i+=1
-    dfo.to_csv('amzout.csv')
+    dfo.to_csv(output_path+'/amzout.csv')
