@@ -64,19 +64,24 @@ class controller(QMainWindow, UiWrapper):
                 # self.threadpool.start(worker)
             elif ui_input['type']=='songs':
                 if 'Youtube' in ui_input['sources']:
-                    print('you')
+                    print('youtube')
                     worker_yt = Worker(get_youtube_data, df_dict)
                     worker_yt.signals.result.connect(self.print_output)
                     worker_yt.signals.finished.connect(self.thread_finished)
                     worker_yt.signals.progress.connect(self.update_progress_bar)
                     self.threadpool.start(worker_yt)
                 if 'Spotify' in ui_input['sources']:
-                    print('so')
-                    worker_fm = Worker(perform_last_fm_s, df_dict)
+                    print('spotify')
+                    worker_fm = Worker(self.test_worker)
+                    #worker_fm = Worker(perform_last_fm_s, df_dict)
                     worker_fm.signals.result.connect(self.print_output)
                     worker_fm.signals.finished.connect(self.thread_finished)
                     worker_fm.signals.progress.connect(self.update_progress_bar)
                     self.threadpool.start(worker_fm)
+    def test_worker(self,progress_callback):
+        for i in range(0,10):
+            time.sleep(1)
+            progress_callback.emit((i+1)*10)
 
     def validate_input_info(self,ui_input):
         if not os.path.isfile(ui_input['input_file_path']):

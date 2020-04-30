@@ -2,7 +2,10 @@ import scrapy
 # from amazonscrap.items import AmazonscrapItem
 from scrapy import signals
 from scrapy.crawler import CrawlerProcess
+import pandas as pd
 # to run : scrapy crawl book-scraper
+
+
 class BooksSpider(scrapy.Spider):
     name = "book-scraper"
     # def pass_in_df(self,df):
@@ -14,8 +17,6 @@ class BooksSpider(scrapy.Spider):
 
     def start_requests(self):
         search_base = 'https://www.amazon.com/s?k='
-        #book_names = ['What Every BODY Is Saying: An Ex-FBI Agent’s Guide to Speed-Reading People',
-        #              'Louder Than Words: Take Your Career from Average to Exceptional with the Hidden Power of Nonverbal Intelligence']
         book_names = []
         df=current_df[0]
         if 'title' in df.columns:
@@ -24,9 +25,17 @@ class BooksSpider(scrapy.Spider):
             book_names=df['Title'].str.replace('\xa0','').tolist()
         print(book_names)
 
+        #TODO for Aditya:
+        #Scraper does not work on customized input, such as the list below. No result will be retrieved by this script
+        #Also, running this code multiple times have a chance of getting inconsistent result for items
+
         book_names=['Pride and Prejudice', 'Jane Eyre', 'The Picture of Dorian Gray', 'Wuthering Heights', 'Crime and Punishment',
          'Frankenstein', 'The Count of Monte Cristo', "Alice's Adventures in Wonderland & Through the Looking-Glass",
          'Dracula', 'Les Misérables']
+
+        #legacy code
+        book_names = ['What Every BODY Is Saying: An Ex-FBI Agent’s Guide to Speed-Reading People',
+                     'Louder Than Words: Take Your Career from Average to Exceptional with the Hidden Power of Nonverbal Intelligence']
         for names in book_names:
             yield scrapy.Request(url=search_base + names, callback=self.parse)
     
@@ -72,7 +81,7 @@ class BooksSpider(scrapy.Spider):
                 all_prices[book_type] = price
         print('====================================\n',title,'\n',all_prices)
         print('====================================')
-        
+        scrape_result[title]=all_prices
         return book
 
     @staticmethod
@@ -100,9 +109,12 @@ class BooksSpider(scrapy.Spider):
 
 
 current_df=[]
-
+scrape_result={}
 
 def start_crawler(df_dict, progress_callback):
+    tmp_r=[k for k in scrape_result]
+    for key in tmp_r: del scrape_result[key]
+
     while len(current_df)>0:
         current_df.pop()
     print(df_dict)
@@ -116,3 +128,13 @@ def start_crawler(df_dict, progress_callback):
         process.start() # the script will block here until the crawling is finished
         print('##########################')
         current_df.pop()
+
+    dfo = pd.DataFrame(columns=['Title','Paperback','Audiobook','Hardcover','Kindle'])
+    i=0
+    for title in scrape_result:
+        print(title)
+        dfo.loc[i,'Title']=title.strip()
+        for book_price_type in scrape_result[title]:
+            dfo.loc[i,book_price_type]=scrape_result[title][book_price_type].strip().replace('$','')
+        i+=1
+    dfo.to_csv('amzout.csv')
