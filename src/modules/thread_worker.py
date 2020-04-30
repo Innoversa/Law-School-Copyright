@@ -32,7 +32,6 @@ class Worker(QRunnable):
         self.signals = WorkerSignals()
 
         self.kwargs['progress_callback'] = self.signals.progress
-
     @pyqtSlot()
     def run(self):
         """

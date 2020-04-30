@@ -107,10 +107,11 @@ def perform_last_fm(data):
     return out_df
 
 
-def perform_last_fm_s(data):
+def perform_last_fm_s(data, progress_callback):
     out_put = {}
     i = 0
     for each in data:
+        print('asd')
         i = i+1
         out_df = (perform_last_fm(each))
         out_df.to_excel('output.xlsx', sheet_name=i)
@@ -136,9 +137,9 @@ def perform_last_fm_s(data):
 # for each in aasd:
 #     print(each)
 #     r = lastfm_get(each)
-
-data = pd.read_excel(r'Year-end Hot 100 1963-1964.xlsx')
-perform_last_fm_s(data)
+if __name__ == "__main__":
+    data = pd.read_excel(r'Year-end Hot 100 1963-1964.xlsx')
+    perform_last_fm_s(data)
 # request_query = load_data_from_excel()
 # for each in request_query:
 #     print(each)

@@ -1,16 +1,32 @@
 import scrapy
 # from amazonscrap.items import AmazonscrapItem
 from scrapy import signals
-
+from scrapy.crawler import CrawlerProcess
 # to run : scrapy crawl book-scraper
 class BooksSpider(scrapy.Spider):
     name = "book-scraper"
-    
+    # def pass_in_df(self,df):
+    #     self.df=df
+    #     if 'title' in df.columns:
+    #         self.book_names=df['title'].tolist()
+    #     elif 'Title' in df.columns:
+    #         self.book_names=df['Title'].tolist()
+
     def start_requests(self):
         search_base = 'https://www.amazon.com/s?k='
-        book_names = ['What Every BODY Is Saying: An Ex-FBI Agent’s Guide to Speed-Reading People',
-                      'Louder Than Words: Take Your Career from Average to Exceptional with the Hidden Power of Nonverbal Intelligence']
+        #book_names = ['What Every BODY Is Saying: An Ex-FBI Agent’s Guide to Speed-Reading People',
+        #              'Louder Than Words: Take Your Career from Average to Exceptional with the Hidden Power of Nonverbal Intelligence']
+        book_names = []
+        df=current_df[0]
+        if 'title' in df.columns:
+            book_names=df['title'].str.replace('\xa0','').tolist()
+        elif 'Title' in df.columns:
+            book_names=df['Title'].str.replace('\xa0','').tolist()
+        print(book_names)
 
+        book_names=['Pride and Prejudice', 'Jane Eyre', 'The Picture of Dorian Gray', 'Wuthering Heights', 'Crime and Punishment',
+         'Frankenstein', 'The Count of Monte Cristo', "Alice's Adventures in Wonderland & Through the Looking-Glass",
+         'Dracula', 'Les Misérables']
         for names in book_names:
             yield scrapy.Request(url=search_base + names, callback=self.parse)
     
@@ -81,3 +97,22 @@ class BooksSpider(scrapy.Spider):
     def escape(text):
         text = text.replace("'","''")
         return text
+
+
+current_df=[]
+
+
+def start_crawler(df_dict, progress_callback):
+    while len(current_df)>0:
+        current_df.pop()
+    print(df_dict)
+    for k in df_dict:
+        current_df.append(df_dict[k])
+        process = CrawlerProcess({
+            'USER_AGENT': 'Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1)'
+        })
+
+        process.crawl(BooksSpider)
+        process.start() # the script will block here until the crawling is finished
+        print('##########################')
+        current_df.pop()

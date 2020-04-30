@@ -10,7 +10,10 @@ import time
 import os
 from modules.thread_worker import Worker
 from yt_scrape.myYT import get_youtube_data
-# import last_fm.last_fm_main
+from amazon_books_scrape.amazonscrap.spiders.book_scrapper import start_crawler
+from last_fm.last_fm_main import perform_last_fm_s
+from multiprocessing import Process
+
 class controller(QMainWindow, UiWrapper):
     def __init__(self, parent=None):
         super(controller, self).__init__(parent)
@@ -35,18 +38,54 @@ class controller(QMainWindow, UiWrapper):
 
     def thread_finished(self):
         print("Finished")
-
     def slot_start_button_clicked(self):
-        QMessageBox.warning(self, 'Not Implemented', "Scraping functions has not implemented yet. "
-                                                     "Results are for testing only.")
-        # For testing:
-        print(self.get_all_input_information())
-        df=read_spreadsheet(self.get_all_input_information()['input_file_path'])
-        #worker = Worker(get_youtube_data, df)
-        worker.signals.result.connect(self.print_output)
-        worker.signals.finished.connect(self.thread_finished)
-        worker.signals.progress.connect(self.update_progress_bar)
-        self.threadpool.start(worker)
+
+
+        ui_input=self.get_all_input_information()
+        print(ui_input)
+        #TODO: Remove True
+        if True or self.validate_input_info(ui_input):
+            df_dict=read_spreadsheet(self.get_all_input_information()['input_file_path'])
+            if ui_input['type']=='books':
+                #os.system(r'cd amazon_books_scrape\amazonscrap\ & scrapy crawl book-scraper')
+                #kw={'ttr':'asd', 'progress_callback':}
+                p = Process(target=start_crawler, args=(df_dict, None))
+                p.start()
+                #p.join()
+
+                # try:
+                #     start_crawler(None)
+                # except Exception as e:
+                #     print(e)
+                # worker = Worker(start_crawler)
+                # worker.signals.result.connect(self.print_output)
+                # worker.signals.finished.connect(self.thread_finished)
+                # worker.signals.progress.connect(self.update_progress_bar)
+                # self.threadpool.start(worker)
+            elif ui_input['type']=='songs':
+                if 'Youtube' in ui_input['sources']:
+                    print('you')
+                    worker_yt = Worker(get_youtube_data, df_dict)
+                    worker_yt.signals.result.connect(self.print_output)
+                    worker_yt.signals.finished.connect(self.thread_finished)
+                    worker_yt.signals.progress.connect(self.update_progress_bar)
+                    self.threadpool.start(worker_yt)
+                if 'Spotify' in ui_input['sources']:
+                    print('so')
+                    worker_fm = Worker(perform_last_fm_s, df_dict)
+                    worker_fm.signals.result.connect(self.print_output)
+                    worker_fm.signals.finished.connect(self.thread_finished)
+                    worker_fm.signals.progress.connect(self.update_progress_bar)
+                    self.threadpool.start(worker_fm)
+
+    def validate_input_info(self,ui_input):
+        if not os.path.isfile(ui_input['input_file_path']):
+            QMessageBox.warning(self, 'Error', "Input file is not selected or not valid.")
+            return False
+        if not os.path.isdir(ui_input['output_file_path']):
+            QMessageBox.warning(self, 'Error', "Output path is not selected or not valid.")
+            return False
+        return True
 
     def get_all_input_information(self):
         """
@@ -59,6 +98,7 @@ class controller(QMainWindow, UiWrapper):
         else:
             result['type']='songs'
         result['input_file_path']=self.input_path_label.text()
+        result['output_file_path']=self.output_path_label.text()
         result['sources']=[]
         if self.source_checkBox_1.isChecked():
             result['sources'].append(self.widget_titles[result['type']]['sources'][0])
