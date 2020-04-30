@@ -42,7 +42,7 @@ class controller(QMainWindow, UiWrapper):
         # For testing:
         print(self.get_all_input_information())
         df=read_spreadsheet(self.get_all_input_information()['input_file_path'])
-        worker = Worker(get_youtube_data, df)
+        #worker = Worker(get_youtube_data, df)
         worker.signals.result.connect(self.print_output)
         worker.signals.finished.connect(self.thread_finished)
         worker.signals.progress.connect(self.update_progress_bar)
