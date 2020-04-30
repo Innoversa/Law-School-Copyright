@@ -107,6 +107,7 @@ def get_youtube_data(sheets,progress_callback):
     i=0
     for key, value in sheets.items():
         sheets[key] = process_dataframe(value)
-        progress_callback.emit(int(i*100/len(sheets)))
+        progress_callback.emit(int((i+1)*100/len(sheets)))
+        i+=1
     progress_callback.emit(100)
     return sheets
