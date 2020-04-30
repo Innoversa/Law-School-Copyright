@@ -123,7 +123,7 @@ def perform_last_fm(data,progress_callback):
 
 def perform_last_fm_s(data, progress_callback):
     out_put = {}
-    writer = pd.ExcelWriter('output.xlsx', engine='xlsxwriter')
+    writer = pd.ExcelWriter('last_fm_output.xlsx', engine='xlsxwriter')
     for each in data:
         print(data[each])
         out_df = (perform_last_fm(data[each],progress_callback))
