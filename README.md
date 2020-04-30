@@ -7,9 +7,6 @@ Team Member: Chen Liang, Fengqiao Wang, Joseph Cisneros, David Qin, Paul Quek, A
 Welcome to the Law-School-Copyright wiki!
 
 ### Dependencies:
-`pip install pandas`
-
-`pip install PyQt5`
 
 `pip install requests-cache`
 
