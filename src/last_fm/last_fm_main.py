@@ -88,7 +88,7 @@ def jprint(obj):
     return text
 
 
-def perform_last_fm(data):
+def perform_last_fm(data,progress_callback):
     df = pd.DataFrame(data, columns=['title', 'artist'])
     print(df)
     request_query = []
@@ -103,13 +103,17 @@ def perform_last_fm(data):
         req = {}
     out_query = []
     out_dict = {}
+    i=0
     for each in request_query:
+        progress_callback.emit(100*int(i/df.shape[0]))
         out_dict['artist'] = each['artist']
         out_dict['track'] = each['track']
         # print(each)
         out_dict.update(lastfm_get(each))
         out_query.append(out_dict)
         out_dict = {}
+        i+=0
+
     print(out_query)
     out_df = pd.DataFrame(out_query)
     print(out_df)
@@ -122,8 +126,9 @@ def perform_last_fm_s(data, progress_callback):
     writer = pd.ExcelWriter('output.xlsx', engine='xlsxwriter')
     for each in data:
         print(data[each])
-        out_df = (perform_last_fm(data[each]))
+        out_df = (perform_last_fm(data[each],progress_callback))
         out_df.to_excel(writer, sheet_name=each)
+    progress_callback.emit(100)
     writer.save()
 
 #
