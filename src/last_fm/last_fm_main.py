@@ -100,7 +100,7 @@ def perform_last_fm(data, progress_callback):
     for index, row in df.iterrows():
         req['method'] = 'track.getInfo'
         req['autocorrect'] = 1
-        print('track,', row['title'])
+        # print('track,', row['title'])
         req['track'] = row['title'][1:-1]
         req['artist'] = row['artist']
         request_query.append(req)
@@ -109,7 +109,8 @@ def perform_last_fm(data, progress_callback):
     out_dict = {}
     i = 0
     for each in request_query:
-        progress_callback.emit(100 * int(i / df.shape[0]))
+        if __name__ != "__main__":
+            progress_callback.emit(100 * int(i / df.shape[0]))
         out_dict['artist'] = each['artist']
         out_dict['track'] = each['track']
         # print(each)
@@ -132,7 +133,8 @@ def perform_last_fm_s(data, progress_callback):
         print(data[each])
         out_df = (perform_last_fm(data[each],progress_callback))
         out_df.to_excel(writer, sheet_name=each)
-    progress_callback.emit(100)
+    if __name__ != "__main__":
+        progress_callback.emit(100)
     writer.save()
 
 #
@@ -160,7 +162,7 @@ if __name__ == "__main__":
     data = pd.read_excel(r'Year-end Hot 100 1963-1964.xlsx', sheet_name=None)
     # for each in data:
     #     print(data[each])
-    perform_last_fm_s(data, progress_callback)
+    perform_last_fm_s(data, 'progress_callback')
     # perform_last_fm(data)
 # request_query = load_data_from_excel()
 # for each in request_query:
