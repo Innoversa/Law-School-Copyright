@@ -16,15 +16,14 @@ def load_data_from_excel(csv_input):
     req = {}
     data = pd.read_excel(r''+csv_input)
     if 'Title' in data and 'Artist' in data:
-        df = pd.DataFrame(data, columns=['Title', 'Artist'])
-    else:
-        df = pd.DataFrame(data, columns=['title', 'artist'])
+        data = data.rename(columns={'Title': 'title', 'Artist': 'artist'})
+    df = pd.DataFrame(data, columns=['title', 'artist'])
     # print(df)
     for index, row in df.iterrows():
         req['method'] = 'track.getInfo'
         req['autocorrect'] = 1
-        req['track'] = row['Title'][1:-1]
-        req['artist'] = row['Artist']
+        req['track'] = row['title'][1:-1]
+        req['artist'] = row['artist']
         request_query.append(req)
         req = {}
     return request_query
@@ -91,7 +90,9 @@ def jprint(obj):
     return text
 
 
-def perform_last_fm(data,progress_callback):
+def perform_last_fm(data, progress_callback):
+    if 'Title' in data and 'Artist' in data:
+        data = data.rename(columns={'Title': 'title', 'Artist': 'artist'})
     df = pd.DataFrame(data, columns=['title', 'artist'])
     print(df)
     request_query = []
@@ -106,16 +107,16 @@ def perform_last_fm(data,progress_callback):
         req = {}
     out_query = []
     out_dict = {}
-    i=0
+    i = 0
     for each in request_query:
-        progress_callback.emit(100*int(i/df.shape[0]))
+        progress_callback.emit(100 * int(i / df.shape[0]))
         out_dict['artist'] = each['artist']
         out_dict['track'] = each['track']
         # print(each)
         out_dict.update(lastfm_get(each))
         out_query.append(out_dict)
         out_dict = {}
-        i+=1
+        i += 1
 
     print(out_query)
     out_df = pd.DataFrame(out_query)
@@ -159,7 +160,7 @@ if __name__ == "__main__":
     data = pd.read_excel(r'Year-end Hot 100 1963-1964.xlsx', sheet_name=None)
     # for each in data:
     #     print(data[each])
-    perform_last_fm_s(data, 'aaa')
+    perform_last_fm_s(data, progress_callback)
     # perform_last_fm(data)
 # request_query = load_data_from_excel()
 # for each in request_query:
