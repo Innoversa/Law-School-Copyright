@@ -15,7 +15,10 @@ def load_data_from_excel(csv_input):
     request_query = []
     req = {}
     data = pd.read_excel(r''+csv_input)
-    df = pd.DataFrame(data, columns=['Title', 'Artist'])
+    if 'Title' in data and 'Artist' in data:
+        df = pd.DataFrame(data, columns=['Title', 'Artist'])
+    else:
+        df = pd.DataFrame(data, columns=['title', 'artist'])
     # print(df)
     for index, row in df.iterrows():
         req['method'] = 'track.getInfo'
