@@ -139,3 +139,5 @@ src/ui/qtsrc/main_window3.py
 src/ui/qtsrc/main_window2.py
 src/amzout.csv
 src/amazon_books_scrape/amazonscrap/spiders/__pycache__/book_scrapper.cpython-37.pyc
+src/amazon_books_scrape/amazonscrap/spiders/__pycache__/book_scrapper.cpython-37.pyc
+src/output.xlsx

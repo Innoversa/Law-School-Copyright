@@ -33,9 +33,9 @@ class BooksSpider(scrapy.Spider):
          'Frankenstein', 'The Count of Monte Cristo', "Alice's Adventures in Wonderland & Through the Looking-Glass",
          'Dracula', 'Les Misérables']
 
-        #legacy code
-        book_names = ['What Every BODY Is Saying: An Ex-FBI Agent’s Guide to Speed-Reading People',
-                     'Louder Than Words: Take Your Career from Average to Exceptional with the Hidden Power of Nonverbal Intelligence']
+        # #legacy code
+        # book_names = ['What Every BODY Is Saying: An Ex-FBI Agent’s Guide to Speed-Reading People',
+        #              'Louder Than Words: Take Your Career from Average to Exceptional with the Hidden Power of Nonverbal Intelligence']
         for names in book_names:
             yield scrapy.Request(url=search_base + names, callback=self.parse)
     

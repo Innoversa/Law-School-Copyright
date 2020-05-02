@@ -38,6 +38,12 @@ class controller(QMainWindow, UiWrapper):
 
     def thread_finished(self):
         print("Finished")
+
+    def save_dataframe(self, frame):
+        for k, v in frame.items():
+            v.to_csv(os.path.join(self.get_all_input_information()['output_file_path'],'ytout.csv'))
+
+
     def slot_start_button_clicked(self):
 
         self.update_progress_bar(0)
@@ -67,13 +73,13 @@ class controller(QMainWindow, UiWrapper):
                 if 'Youtube' in ui_input['sources']:
                     print('youtube')
                     worker_yt = Worker(get_youtube_data, df_dict)
-                    worker_yt.signals.result.connect(self.print_output)
+                    worker_yt.signals.result.connect(self.save_dataframe)
                     worker_yt.signals.finished.connect(self.thread_finished)
                     worker_yt.signals.progress.connect(self.update_progress_bar)
                     self.threadpool.start(worker_yt)
                 if 'Spotify' in ui_input['sources']:
                     print('spotify')
-                    worker_fm = Worker(perform_last_fm_s, df_dict)
+                    worker_fm = Worker(perform_last_fm_s, df_dict,self.get_all_input_information())
                     worker_fm.signals.result.connect(self.print_output)
                     worker_fm.signals.finished.connect(self.thread_finished)
                     worker_fm.signals.progress.connect(self.update_progress_bar)

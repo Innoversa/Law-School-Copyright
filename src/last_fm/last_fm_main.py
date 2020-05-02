@@ -9,7 +9,7 @@ import requests
 import json
 import pandas as pd
 import xlsxwriter
-
+import os
 
 def load_data_from_excel(csv_input):
     request_query = []
@@ -124,9 +124,9 @@ def perform_last_fm(data,progress_callback):
     return out_df
 
 
-def perform_last_fm_s(data, progress_callback):
+def perform_last_fm_s(data, ui_input,progress_callback):
     out_put = {}
-    writer = pd.ExcelWriter('last_fm_output.xlsx', engine='xlsxwriter')
+    writer = pd.ExcelWriter(os.path.join(ui_input['output_file_path'],'last_fm_output.xlsx'),engine='xlsxwriter')
     for each in data:
         print(data[each])
         out_df = (perform_last_fm(data[each],progress_callback))
