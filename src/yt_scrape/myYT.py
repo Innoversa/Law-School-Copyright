@@ -10,6 +10,17 @@ import google_auth_oauthlib.flow
 import googleapiclient.discovery
 import googleapiclient.errors
 
+# Converts youtube's PT time to a default colon seperated form
+def _js_parseInt(string):
+    return str(''.join([x for x in string if x.isdigit()]))
+def formatTime(duration):
+    match = re.match('PT(\d+H)?(\d+M)?(\d+S)?', duration).groups()
+    hours = _js_parseInt(match[0]) if match[0] else str(0)
+    minutes = _js_parseInt(match[1]) if match[1] else str(0)
+    seconds = _js_parseInt(match[2]) if match[2] else str(0)
+    return hours + ":" + minutes + ":" + seconds
+
+
 # Gets the views, duration, likes, and dislikes from a video.
 # Performs a YT api call which uses about 5 units per request
 # Called onto every video
@@ -73,7 +84,7 @@ def process_dataframe(df):
             df.at[i,'Title 1'] = response['items'][0]['snippet']['title']
             df.at[i,'videoID 1'] = response['items'][0]['id']['videoId']
             df.at[i,'Views 1'] = stats1[0]
-            df.at[i,'Duration 1'] = stats1[1]
+            df.at[i,'Duration 1'] = formatTime(stats1[1])
             df.at[i,'Thumbs Up 1'] = stats1[2]
             df.at[i,'Thumbs Down 1'] = stats1[3]
 
@@ -82,7 +93,7 @@ def process_dataframe(df):
             df.at[i,'Title 2'] = response['items'][1]['snippet']['title']
             df.at[i,'videoID 2'] = response['items'][1]['id']['videoId']
             df.at[i,'Views 2'] = stats2[0]
-            df.at[i,'Duration 2'] = stats2[1]
+            df.at[i,'Duration 2'] = formatTime(stats2[1])
             df.at[i,'Thumbs Up 2'] = stats2[2]
             df.at[i,'Thumbs Down 2'] = stats2[3]
 
@@ -91,11 +102,10 @@ def process_dataframe(df):
             df.at[i,'Title 3'] = response['items'][2]['snippet']['title']
             df.at[i,'videoID 3'] = response['items'][2]['id']['videoId']
             df.at[i,'Views 3'] = stats3[0]
-            df.at[i,'Duration 3'] = stats3[1]
+            df.at[i,'Duration 3'] = formatTime(stats3[1])
             df.at[i,'Thumbs Up 3'] = stats3[2]
             df.at[i,'Thumbs Down 3'] = stats3[3]
-    except Exception as e:
-        print(e)
+    except:
         print("An exception occured. High likely quota limit. Saving whatever has been read")
     
     
