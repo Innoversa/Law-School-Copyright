@@ -79,11 +79,14 @@ class controller(QMainWindow, UiWrapper):
                     self.threadpool.start(worker_yt)
                 if 'Spotify' in ui_input['sources']:
                     print('spotify')
-                    worker_fm = Worker(perform_last_fm_s, df_dict,self.get_all_input_information())
-                    worker_fm.signals.result.connect(self.print_output)
-                    worker_fm.signals.finished.connect(self.thread_finished)
-                    worker_fm.signals.progress.connect(self.update_progress_bar)
-                    self.threadpool.start(worker_fm)
+                    try:
+                        worker_fm = Worker(perform_last_fm_s, df_dict,self.get_all_input_information())
+                        worker_fm.signals.result.connect(self.print_output)
+                        worker_fm.signals.finished.connect(self.thread_finished)
+                        worker_fm.signals.progress.connect(self.update_progress_bar)
+                        self.threadpool.start(worker_fm)
+                    except Exception as e:
+                        print(e)
 
     def test_worker(self,progress_callback):
         for i in range(0,10):

@@ -1,7 +1,7 @@
 .idea/
 src/sample_data
 src/amazon_books_scrape/amazonscrap/spiders/__pycache__
-
+*.xlsx
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
