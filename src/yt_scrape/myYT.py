@@ -113,11 +113,14 @@ def process_dataframe(df):
 
 # Takes a dictionary where keys are sheet names (Excel file)
 # Values are pandas dataframes
-def get_youtube_data(sheets,progress_callback):
+def get_youtube_data(sheets,output_path, progress_callback):
     i=0
+    writer = pd.ExcelWriter(os.path.join(output_path, 'youtube_output.xlsx'), engine='xlsxwriter')
     for key, value in sheets.items():
-        sheets[key] = process_dataframe(value)
+        #sheets[key] = process_dataframe(value)
+        process_dataframe(value).to_excel(writer, sheet_name=key)
         progress_callback.emit(int((i+1)*100/len(sheets)))
         i+=1
+    writer.save()
     progress_callback.emit(100)
     return sheets
