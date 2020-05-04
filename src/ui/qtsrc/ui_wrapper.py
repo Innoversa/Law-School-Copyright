@@ -36,7 +36,8 @@ class UiWrapper(Ui_MainWindow):
         self.attribute_checkBox_3.setText(_translate("MainWindow", self.widget_titles['books']['attributes'][2]))
         self.attribute_checkBox_4.setText(_translate("MainWindow", self.widget_titles['books']['attributes'][3]))
         self.source_checkBox_1.setText(_translate("MainWindow", self.widget_titles['books']['sources'][0]))
-        self.source_checkBox_2.setText(_translate("MainWindow", self.widget_titles['books']['sources'][1]))
+        self.source_checkBox_2.setVisible(False)
+        #self.source_checkBox_2.setText(_translate("MainWindow", self.widget_titles['books']['sources'][1]))
 
     def songsUi(self):
         _translate = QtCore.QCoreApplication.translate
@@ -45,6 +46,7 @@ class UiWrapper(Ui_MainWindow):
         self.attribute_checkBox_3.setText(_translate("MainWindow", self.widget_titles['songs']['attributes'][2]))
         self.attribute_checkBox_4.setText(_translate("MainWindow", self.widget_titles['songs']['attributes'][3]))
         self.source_checkBox_1.setText(_translate("MainWindow", self.widget_titles['songs']['sources'][0]))
+        self.source_checkBox_2.setVisible(True)
         self.source_checkBox_2.setText(_translate("MainWindow", self.widget_titles['songs']['sources'][1]))
 
     def update_progress_bar(self,percentage):
