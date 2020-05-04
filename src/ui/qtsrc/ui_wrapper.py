@@ -99,7 +99,7 @@ class UiWrapper(Ui_MainWindow):
             elif self.current_color[c_pos] < 0:
                 self.current_color[c_pos] = 0
         self.left_frame.setStyleSheet("background-color: rgb(" + str(int(self.current_color[0])) + ", " + str(
-            int(self.current_color[1])) + ", " + str(int(self.current_color[2])) + ");")
+            int(self.current_color[1])) + ", " + str(int(self.current_color[2])) + ")")
 
     def change_color(self,target_color,progress_callback):
         steps=10
