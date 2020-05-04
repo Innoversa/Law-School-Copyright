@@ -37,16 +37,19 @@ class Worker(QRunnable):
         """
         Initialise the runner function with passed args, kwargs.
         """
+        has_error=False
         try:
             result = self.fn(*self.args, **self.kwargs)
         except:
             traceback.print_exc()
             exctype, value = sys.exc_info()[:2]
+            has_error=True
             self.signals.error.emit((exctype, value, traceback.format_exc()))
         else:
             self.signals.result.emit(result)  # Return the result of the processing
         finally:
-            self.signals.finished.emit()  # Done
+            if not has_error:
+                self.signals.finished.emit()  # Done
 
 class MainWindow(QMainWindow):
 
