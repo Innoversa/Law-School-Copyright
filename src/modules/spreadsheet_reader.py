@@ -13,7 +13,12 @@ def read_spreadsheet(file_path):
     {'sheet1name': dataframeObject1, 'sheet2name':'dataframeObject2'
     """
     if file_path.endswith('csv'):
-        return {'csv':pd.read_csv(file_path)}
+        dftmp = pd.read_csv(file_path)
+        col_rename = {}
+        for col_name in dftmp.columns:
+            col_rename[col_name] = col_name.lower()
+        dftmp = dftmp.rename(columns=col_rename)
+        return {'csv':dftmp}
 
     excel_file = pd.ExcelFile(file_path)
     result = {}

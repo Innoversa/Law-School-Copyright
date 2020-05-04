@@ -8,33 +8,31 @@ import pandas as pd
 
 class BooksSpider(scrapy.Spider):
     name = "book-scraper"
-    # def pass_in_df(self,df):
-    #     self.df=df
-    #     if 'title' in df.columns:
-    #         self.book_names=df['title'].tolist()
-    #     elif 'Title' in df.columns:
-    #         self.book_names=df['Title'].tolist()
 
     def start_requests(self):
-        search_base_p1 = 'https://www.amazon.in/s?k='
+        search_base_p1 = 'https://www.amazon.com/s?k='
         search_base_p2 = '&i=stripbooks&ref=nb_sb_noss_2'
         book_names = []
-        # df=current_df[0]
-        # if 'title' in df.columns:
-        #     book_names=df['title'].str.replace('\xa0','').tolist()
-        # elif 'Title' in df.columns:
-        #     book_names=df['Title'].str.replace('\xa0','').tolist()
-        # print(book_names)
-
-        book_names=['Pride and Prejudice', 'Jane Eyre', 'The Picture of Dorian Gray', 'Wuthering Heights', 'Crime and Punishment',
-         'Frankenstein', 'The Count of Monte Cristo', "Alice's Adventures in Wonderland & Through the Looking-Glass",
-         'Dracula', 'Les Misérables']
+        df=current_df[0]
+        if 'title' in df.columns:
+            book_names=df['title'].str.replace('\xa0','').tolist()
+        elif 'Title' in df.columns:
+            book_names=df['Title'].str.replace('\xa0','').tolist()
+        print(book_names)
+        # book_names=['Pride and Prejudice', 'Jane Eyre', 'The Picture of Dorian Gray', 'Wuthering Heights', 'Crime and Punishment',
+        #  'Frankenstein', 'The Count of Monte Cristo', "Alice's Adventures in Wonderland & Through the Looking-Glass",
+        #  'Dracula', 'Les Misérables']
 
         # #legacy code
         # book_names = ['What Every BODY Is Saying: An Ex-FBI Agent’s Guide to Speed-Reading People',
         #              'Louder Than Words: Take Your Career from Average to Exceptional with the Hidden Power of Nonverbal Intelligence']
+        index=0
         for names in book_names:
+            names=names.replace(' ','%20')
+            print(search_base_p1 + names + search_base_p2)
+            self.current_index=index
             yield scrapy.Request(url=search_base_p1 + names + search_base_p2, callback=self.parse)
+            index+=1
                 
     def parse(self, response):
         
@@ -115,7 +113,8 @@ class BooksSpider(scrapy.Spider):
         else:    
             print('====================================\n',title,'\n',all_prices)
             print('====================================')
-        
+            all_prices['book_found']=title
+            scrape_result[self.current_index] = all_prices
             return book
 
     @staticmethod
@@ -152,8 +151,10 @@ def start_crawler(df_dict, output_path,progress_callback):
     while len(current_df)>0:
         current_df.pop()
     print(df_dict)
-    for k in df_dict:
-        current_df.append(df_dict[k])
+
+    writer = pd.ExcelWriter(output_path+'/amazonoutput.xlsx', engine='xlsxwriter')
+    for sheet_name in df_dict:
+        current_df.append(df_dict[sheet_name])
         process = CrawlerProcess({
             'USER_AGENT': 'Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1)'
         })
@@ -161,14 +162,22 @@ def start_crawler(df_dict, output_path,progress_callback):
         process.crawl(BooksSpider)
         process.start() # the script will block here until the crawling is finished
         print('##########################')
+        print(current_df[0].columns)
+        print(scrape_result)
+        dfo = pd.DataFrame(index=range(current_df[0].shape[0]),columns=['Title','BookNameFound','Paperback','Audiobook','Hardcover','Kindle'])
+        for current_index in scrape_result:
+            dfo.iloc[current_index,0]=current_df[0].loc[current_index,'title']
+            for book_price_type in scrape_result[current_index]:
+                if book_price_type is None or len(book_price_type)==0:
+                    continue
+                if book_price_type=='book_found':
+                    dfo.iloc[current_index,1]=scrape_result[current_index][book_price_type].strip()
+                else:
+                    dfo.iloc[current_index,dfo.columns.get_loc(book_price_type)]=scrape_result[current_index][book_price_type].strip().replace('$','')
+        #dfo.to_csv(output_path+'/amzout.csv')
+        dfo.to_excel(writer, sheet_name=sheet_name)
+        #clear up
+        tmp_r=[k for k in scrape_result]
+        for key in tmp_r: del scrape_result[key]
         current_df.pop()
-
-    dfo = pd.DataFrame(columns=['Title','Paperback','Audiobook','Hardcover','Kindle'])
-    i=0
-    for title in scrape_result:
-        print(title)
-        dfo.loc[i,'Title']=title.strip()
-        for book_price_type in scrape_result[title]:
-            dfo.loc[i,book_price_type]=scrape_result[title][book_price_type].strip().replace('$','')
-        i+=1
-    dfo.to_csv(output_path+'/amzout.csv')
+    writer.save()
