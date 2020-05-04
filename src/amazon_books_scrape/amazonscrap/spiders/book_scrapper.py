@@ -12,6 +12,8 @@ class BooksSpider(scrapy.Spider):
     def start_requests(self):
         search_base_p1 = 'https://www.amazon.com/s?k='
         search_base_p2 = '&i=stripbooks&ref=nb_sb_noss_2'
+        self.search_base_p1=search_base_p1
+        self.search_base_p2=search_base_p2
         book_names = []
         df=current_df[0]
         if 'title' in df.columns:
@@ -26,17 +28,15 @@ class BooksSpider(scrapy.Spider):
         # #legacy code
         # book_names = ['What Every BODY Is Saying: An Ex-FBI Agent’s Guide to Speed-Reading People',
         #              'Louder Than Words: Take Your Career from Average to Exceptional with the Hidden Power of Nonverbal Intelligence']
-        index=0
         for names in book_names:
-            names=names.replace(' ','%20')
+            if len(names)==0:
+                continue
             print(search_base_p1 + names + search_base_p2)
-            self.current_index=index
-            yield scrapy.Request(url=search_base_p1 + names + search_base_p2, callback=self.parse)
-            index+=1
+            yield scrapy.Request(url=search_base_p1 + names.replace(' ','%20') + search_base_p2, callback=self.parse,cb_kwargs={'current_book':names})
                 
-    def parse(self, response):
-        
+    def parse(self, response, current_book):
         i=0
+        #print('##'+current_book)
         while True:
             if i>20:
                 print('============================================\nPlease check book name and search again\n',i)
@@ -72,11 +72,10 @@ class BooksSpider(scrapy.Spider):
         book_page = book_link[link_start+1:link_end]
         base_link = "https://www.amazon.com/"
         book_page = base_link + book_page
+        yield scrapy.Request(book_page, callback=self.parse_book, cb_kwargs={'current_book':current_book})
         
-        yield scrapy.Request(book_page, callback=self.parse_book)
-        
-    def parse_book(self, response):
-        
+    def parse_book(self, response, current_book):
+        print('@@@'+response.url)
         book = {}
         title = response.css('span[class="a-size-extra-large"]::text').get()
 
@@ -108,13 +107,13 @@ class BooksSpider(scrapy.Spider):
             new_url = response.url
             new_url_change_pos = new_url.find('com')
             new_url = new_url[0:new_url_change_pos]+'in'+new_url[new_url_change_pos+3:]
-            yield scrapy.Request(new_url, callback=self.parse_book)
+            yield scrapy.Request(new_url, callback=self.parse_book, cb_kwargs={'current_book':current_book})
         
         else:    
             print('====================================\n',title,'\n',all_prices)
             print('====================================')
             all_prices['book_found']=title
-            scrape_result[self.current_index] = all_prices
+            scrape_result[current_book] = all_prices
             return book
 
     @staticmethod
@@ -154,6 +153,8 @@ def start_crawler(df_dict, output_path,progress_callback):
 
     writer = pd.ExcelWriter(output_path+'/amazonoutput.xlsx', engine='xlsxwriter')
     for sheet_name in df_dict:
+        if df_dict[sheet_name].shape[0]==0:
+            continue
         current_df.append(df_dict[sheet_name])
         process = CrawlerProcess({
             'USER_AGENT': 'Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1)'
@@ -165,15 +166,17 @@ def start_crawler(df_dict, output_path,progress_callback):
         print(current_df[0].columns)
         print(scrape_result)
         dfo = pd.DataFrame(index=range(current_df[0].shape[0]),columns=['Title','BookNameFound','Paperback','Audiobook','Hardcover','Kindle'])
-        for current_index in scrape_result:
-            dfo.iloc[current_index,0]=current_df[0].loc[current_index,'title']
-            for book_price_type in scrape_result[current_index]:
-                if book_price_type is None or len(book_price_type)==0:
+        i=0
+        for current_book_name in scrape_result:
+            dfo.loc[i,'Title']=current_book_name
+            for book_price_type in scrape_result[current_book_name]:
+                if book_price_type not in dfo.columns:
                     continue
                 if book_price_type=='book_found':
-                    dfo.iloc[current_index,1]=scrape_result[current_index][book_price_type].strip()
+                    dfo.loc[i,'BookNameFound']=scrape_result[current_book_name][book_price_type].strip()
                 else:
-                    dfo.iloc[current_index,dfo.columns.get_loc(book_price_type)]=scrape_result[current_index][book_price_type].strip().replace('$','')
+                    dfo.loc[i,book_price_type]=scrape_result[current_book_name][book_price_type].strip().replace('$','')
+            i+=1
         #dfo.to_csv(output_path+'/amzout.csv')
         dfo.to_excel(writer, sheet_name=sheet_name)
         #clear up
