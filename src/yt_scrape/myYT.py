@@ -6,6 +6,7 @@ import urllib
 import requests
 import os
 import json
+import re
 import google_auth_oauthlib.flow
 import googleapiclient.discovery
 import googleapiclient.errors
@@ -18,18 +19,21 @@ def formatTime(duration):
     hours = _js_parseInt(match[0]) if match[0] else str(0)
     minutes = _js_parseInt(match[1]) if match[1] else str(0)
     seconds = _js_parseInt(match[2]) if match[2] else str(0)
-    return hours + ":" + minutes + ":" + seconds
+    if hours == str(0):
+        return minutes + ":" + seconds
+    else:
+        return hours + ":" + minutes + ":" + seconds
 
 
 # Gets the views, duration, likes, and dislikes from a video.
 # Performs a YT api call which uses about 5 units per request
 # Called onto every video
-def get_video_stats(youtube, vidId):
+def get_video_stats(youtube, vidId, key):
     # Two different requests
     req1 = youtube.videos().list(part='snippet,contentDetails', id=vidId)
     res1 = req1.execute()
     # https://www.googleapis.com/youtube/v3/videos?part=statistics&id=IDIDID&key=KEYKEYKEY&part=contentDetails
-    req2 = urllib.request.urlopen("https://www.googleapis.com/youtube/v3/videos?part=statistics&id=" + vidId + "&key=AIzaSyAfxOHwTyZWlHoGTvCd0M3dpo_4oqlKHAA" + "&part=contentDetails")
+    req2 = urllib.request.urlopen("https://www.googleapis.com/youtube/v3/videos?part=statistics&id=" + vidId + "&key=" + key + "&part=contentDetails")
     res2 = json.load(req2)
 
     # Set values
@@ -70,6 +74,12 @@ def process_dataframe(df):
     try:
         # Sets up youtube API portion here
         youtube = googleapiclient.discovery.build("youtube", "v3", credentials=get_credentials())
+
+        # Get key
+        f = open("api_keys/yt_apikey", "r")
+        apikey = f.read()
+        f.close()
+
         for i in df.index:
             # Get video ID of top result
             #print(df)
@@ -79,7 +89,7 @@ def process_dataframe(df):
             print(query)
             # Get top 3 results
             vidId1 = response['items'][0]['id']['videoId']
-            stats1 = get_video_stats(youtube, vidId1)
+            stats1 = get_video_stats(youtube, vidId1, apikey)
 
             df.at[i,'Title 1'] = response['items'][0]['snippet']['title']
             df.at[i,'videoID 1'] = response['items'][0]['id']['videoId']
@@ -89,7 +99,7 @@ def process_dataframe(df):
             df.at[i,'Thumbs Down 1'] = stats1[3]
 
             vidId2 = response['items'][1]['id']['videoId']
-            stats2 = get_video_stats(youtube, vidId2)
+            stats2 = get_video_stats(youtube, vidId2, apikey)
             df.at[i,'Title 2'] = response['items'][1]['snippet']['title']
             df.at[i,'videoID 2'] = response['items'][1]['id']['videoId']
             df.at[i,'Views 2'] = stats2[0]
@@ -98,16 +108,14 @@ def process_dataframe(df):
             df.at[i,'Thumbs Down 2'] = stats2[3]
 
             vidId3 = response['items'][2]['id']['videoId']
-            stats3 = get_video_stats(youtube, vidId3)
+            stats3 = get_video_stats(youtube, vidId3, apikey)
             df.at[i,'Title 3'] = response['items'][2]['snippet']['title']
             df.at[i,'videoID 3'] = response['items'][2]['id']['videoId']
             df.at[i,'Views 3'] = stats3[0]
             df.at[i,'Duration 3'] = formatTime(stats3[1])
             df.at[i,'Thumbs Up 3'] = stats3[2]
             df.at[i,'Thumbs Down 3'] = stats3[3]
-    except:
-        print("An exception occured. High likely quota limit. Saving whatever has been read")
-    
+    except Exception as e: print(e)
     
     return df
 
