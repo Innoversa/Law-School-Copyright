@@ -4,7 +4,8 @@ from scrapy import signals
 from scrapy.crawler import CrawlerProcess
 import pandas as pd
 # to run : scrapy crawl book-scraper
-
+import traceback, sys
+import time
 
 class BooksSpider(scrapy.Spider):
     name = "book-scraper"
@@ -143,7 +144,8 @@ class BooksSpider(scrapy.Spider):
 current_df=[]
 scrape_result={}
 
-def start_crawler(df_dict, output_path,progress_callback):
+def start_crawler(df_dict, output_path,progress_queue):
+    print('asd')
     tmp_r=[k for k in scrape_result]
     for key in tmp_r: del scrape_result[key]
 
@@ -152,35 +154,59 @@ def start_crawler(df_dict, output_path,progress_callback):
     print(df_dict)
 
     writer = pd.ExcelWriter(output_path+'/amazonoutput.xlsx', engine='xlsxwriter')
+    sheet_i=0
     for sheet_name in df_dict:
-        if df_dict[sheet_name].shape[0]==0:
-            continue
-        current_df.append(df_dict[sheet_name])
-        process = CrawlerProcess({
-            'USER_AGENT': 'Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1)'
-        })
+        if df_dict[sheet_name].shape[0]>0:
+            try:
+                current_df.append(df_dict[sheet_name])
+                process = CrawlerProcess({
+                    'USER_AGENT': 'Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1)'
+                })
 
-        process.crawl(BooksSpider)
-        process.start() # the script will block here until the crawling is finished
-        print('##########################')
-        print(current_df[0].columns)
-        print(scrape_result)
-        dfo = pd.DataFrame(index=range(current_df[0].shape[0]),columns=['Title','BookNameFound','Paperback','Audiobook','Hardcover','Kindle'])
-        i=0
-        for current_book_name in scrape_result:
-            dfo.loc[i,'Title']=current_book_name
-            for book_price_type in scrape_result[current_book_name]:
-                if book_price_type not in dfo.columns:
-                    continue
-                if book_price_type=='book_found':
-                    dfo.loc[i,'BookNameFound']=scrape_result[current_book_name][book_price_type].strip()
-                else:
-                    dfo.loc[i,book_price_type]=scrape_result[current_book_name][book_price_type].strip().replace('$','')
-            i+=1
-        #dfo.to_csv(output_path+'/amzout.csv')
-        dfo.to_excel(writer, sheet_name=sheet_name)
-        #clear up
-        tmp_r=[k for k in scrape_result]
-        for key in tmp_r: del scrape_result[key]
-        current_df.pop()
-    writer.save()
+                process.crawl(BooksSpider)
+                process.start() # the script will block here until the crawling is finished
+                print('##########################')
+                print(current_df[0].columns)
+                print(scrape_result)
+                dfo = pd.DataFrame(index=range(current_df[0].shape[0]),columns=['Title','BookNameFound','Paperback','Audiobook','Hardcover','Kindle'])
+                i=0
+                for current_book_name in scrape_result:
+                    dfo.loc[i,'Title']=current_book_name
+                    for book_price_type in scrape_result[current_book_name]:
+                        if book_price_type not in dfo.columns:
+                            continue
+                        if book_price_type=='book_found':
+                            dfo.loc[i,'BookNameFound']=scrape_result[current_book_name][book_price_type].strip()
+                        else:
+                            dfo.loc[i,book_price_type]=scrape_result[current_book_name][book_price_type].strip().replace('$','')
+                    i+=1
+                #dfo.to_csv(output_path+'/amzout.csv')
+                dfo.to_excel(writer, sheet_name=sheet_name)
+                #clear up
+                tmp_r=[k for k in scrape_result]
+                for key in tmp_r: del scrape_result[key]
+                current_df.pop()
+            except Exception as e:
+                print(e)
+        while not progress_queue.empty():
+            progress_queue.get()
+        sheet_i+=1
+        progress_percentage=int(100*sheet_i/len(df_dict))
+        if progress_percentage==100:
+            progress_percentage-=1
+        progress_queue.put(progress_percentage)
+    time.sleep(5)
+    try:
+        writer.save()
+    except:
+        traceback.print_exc()
+        exctype, value = sys.exc_info()[:2]
+        while not progress_queue.empty():
+            progress_queue.get()
+        progress_queue.put((exctype, value))
+    while not progress_queue.empty():
+        progress_queue.get()
+    progress_percentage = int(100 * sheet_i / len(df_dict))
+    if progress_percentage == 100:
+        progress_percentage -= 1
+    progress_queue.put(progress_percentage)
