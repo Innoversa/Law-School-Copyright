@@ -9,7 +9,8 @@ import requests
 import json
 import pandas as pd
 import xlsxwriter
-
+import time
+import os
 
 def load_data_from_excel(csv_input):
     request_query = []
@@ -90,7 +91,7 @@ def jprint(obj):
     return text
 
 
-def perform_last_fm(data, progress_callback):
+def perform_last_fm(data, current_finished_count,total_records,progress_callback):
     if 'Title' in data and 'Artist' in data:
         data = data.rename(columns={'Title': 'title', 'Artist': 'artist'})
     df = pd.DataFrame(data, columns=['title', 'artist'])
@@ -110,11 +111,23 @@ def perform_last_fm(data, progress_callback):
     i = 0
     for each in request_query:
         if __name__ != "__main__":
-            progress_callback.emit(100 * int(i / df.shape[0]))
+            progress_callback.emit(int(100 * (i+current_finished_count) / total_records))
         out_dict['artist'] = each['artist']
         out_dict['track'] = each['track']
         # print(each)
-        out_dict.update(lastfm_get(each))
+        max_retry=10
+        current_retry=0
+        is_api_success=False
+        while not is_api_success and current_retry<max_retry:
+            is_api_success=True
+            try:
+                api_result=lastfm_get(each)
+            except Exception as e:
+                print(e)
+                is_api_success=False
+                time.sleep(1)
+            current_retry+=1
+        out_dict.update(api_result)
         out_query.append(out_dict)
         out_dict = {}
         i += 1
@@ -125,17 +138,25 @@ def perform_last_fm(data, progress_callback):
     print(out_df.dtypes)
     return out_df
 
-
-def perform_last_fm_s(data, progress_callback):
+def perform_last_fm_s(data, output_path, progress_callback):
+    #1/0
     out_put = {}
-    writer = pd.ExcelWriter('last_fm_output.xlsx', engine='xlsxwriter')
+    total_records=0
+    for sheet_name in data:
+        total_records+=data[sheet_name].shape[0]
+
+    writer = pd.ExcelWriter(os.path.join(output_path,'last_fm_output.xlsx'), engine='xlsxwriter')
+
+    current_finished_count=0
     for each in data:
         print(data[each])
-        out_df = (perform_last_fm(data[each],progress_callback))
+        out_df = (perform_last_fm(data[each],current_finished_count,total_records,progress_callback))
         out_df.to_excel(writer, sheet_name=each)
+        current_finished_count+=data[each].shape[0]
     if __name__ != "__main__":
         progress_callback.emit(100)
     writer.save()
+    return 'Finished'
 
 #
 # asd = {
