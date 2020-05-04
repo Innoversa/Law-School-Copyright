@@ -84,7 +84,7 @@ class controller(QMainWindow, UiWrapper):
                     print('youtube')
                     #TODO
                     worker_yt = Worker(get_youtube_data, df_dict, ui_input['output_file_path'])
-                    worker_yt.signals.result.connect(self.print_output)
+                    worker_yt.signals.result.connect(self.empty_callback)
                     worker_yt.signals.finished.connect(self.thread_finished)
                     worker_yt.signals.progress.connect(self.update_progress_bar)
                     worker_yt.signals.error.connect(self.error_pop_up)
