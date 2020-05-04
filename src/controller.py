@@ -133,7 +133,7 @@ class controller(QMainWindow, UiWrapper):
                 p.start()
                 worker_monitor = Worker(monitor_process_progress, progress_queue)
                 worker_monitor.signals.result.connect(self.empty_callback)
-                worker_monitor.signals.finished.connect(self.empty_callback)
+                worker_monitor.signals.finished.connect(self.thread_finished)
                 worker_monitor.signals.progress.connect(self.update_progress_bar)
                 worker_monitor.signals.error.connect(self.error_pop_up)
                 self.threadpool.start(worker_monitor)
