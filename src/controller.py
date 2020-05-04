@@ -13,6 +13,7 @@ from yt_scrape.myYT import get_youtube_data
 from amazon_books_scrape.amazonscrap.spiders.book_scrapper import start_crawler
 from last_fm.last_fm_main import perform_last_fm_s
 from multiprocessing import Process
+import pandas as pd
 
 class controller(QMainWindow, UiWrapper):
     def __init__(self, parent=None):
@@ -30,15 +31,31 @@ class controller(QMainWindow, UiWrapper):
             progress_callback.emit((i+1) * 5)
         return None
 
-    def print_output(self, o):
-        for k in o:
-            o[k].to_csv('test.csv')
-            print('writeTOFile')
-        print(o)
-
     def thread_finished(self):
-        print("Finished")
+        QMessageBox.information(self, 'Info', 'Scraping Finished.')
+
+    def empty_callback(self):
+        pass
+
+    def error_pop_up(self,error_info):
+        print(error_info)
+        QMessageBox.warning(self, 'Error', 'Error: '+str(error_info[0])+str(error_info[1]))
+
     def slot_start_button_clicked(self):
+
+        # df_dict = read_spreadsheet('sample_data\\bklong.xlsm')
+        # p = Process(target=start_crawler, args=(df_dict, 'sample_data', None))
+        # p.start()
+
+        # print('Start Clicked')
+        # df_dict = read_spreadsheet('sample_data\\songs.xlsx')
+        # worker_fm = Worker(perform_last_fm_s, df_dict,'')
+        # worker_fm.signals.result.connect(self.empty_callback)
+        # worker_fm.signals.finished.connect(self.thread_finished)
+        # worker_fm.signals.progress.connect(self.update_progress_bar)
+        # worker_fm.signals.error.connect(self.error_pop_up)
+        # self.threadpool.start(worker_fm)
+        # return
 
         self.update_progress_bar(0)
         ui_input=self.get_all_input_information()
@@ -53,7 +70,6 @@ class controller(QMainWindow, UiWrapper):
 
                 self.update_progress_bar(100)
                 #p.join()
-
                 # try:
                 #     start_crawler(None)
                 # except Exception as e:
@@ -66,17 +82,20 @@ class controller(QMainWindow, UiWrapper):
             elif ui_input['type']=='songs':
                 if 'Youtube' in ui_input['sources']:
                     print('youtube')
-                    worker_yt = Worker(get_youtube_data, df_dict)
+                    #TODO
+                    worker_yt = Worker(get_youtube_data, df_dict, ui_input['output_file_path'])
                     worker_yt.signals.result.connect(self.print_output)
                     worker_yt.signals.finished.connect(self.thread_finished)
                     worker_yt.signals.progress.connect(self.update_progress_bar)
+                    worker_yt.signals.error.connect(self.error_pop_up)
                     self.threadpool.start(worker_yt)
                 if 'Spotify' in ui_input['sources']:
                     print('spotify')
-                    worker_fm = Worker(perform_last_fm_s, df_dict)
-                    worker_fm.signals.result.connect(self.print_output)
+                    worker_fm = Worker(perform_last_fm_s, df_dict, ui_input['output_file_path'])
+                    worker_fm.signals.result.connect(self.empty_callback) # handled by scraper itself
                     worker_fm.signals.finished.connect(self.thread_finished)
                     worker_fm.signals.progress.connect(self.update_progress_bar)
+                    worker_fm.signals.error.connect(self.error_pop_up)
                     self.threadpool.start(worker_fm)
 
     def test_worker(self,progress_callback):
