@@ -66,10 +66,11 @@ def get_credentials():
 # Fill the dataframe here after querying YT results
 # There's a good chance you'll hit the quota right now
 # If there's a error, save whatever has been scraped
-def process_dataframe(df):
+def process_dataframe(df,current_finished_count,total_records,progress_callback):
     try:
         # Sets up youtube API portion here
         youtube = googleapiclient.discovery.build("youtube", "v3", credentials=get_credentials())
+        index=0
         for i in df.index:
             # Get video ID of top result
             #print(df)
@@ -105,6 +106,8 @@ def process_dataframe(df):
             df.at[i,'Duration 3'] = formatTime(stats3[1])
             df.at[i,'Thumbs Up 3'] = stats3[2]
             df.at[i,'Thumbs Down 3'] = stats3[3]
+            index+=1
+            progress_callback.emit(int(100 * (index+current_finished_count) / total_records))
     except:
         print("An exception occured. High likely quota limit. Saving whatever has been read")
     
@@ -115,10 +118,15 @@ def process_dataframe(df):
 # Values are pandas dataframes
 def get_youtube_data(sheets,output_path, progress_callback):
     i=0
+    total_records=0
+    for sheet_name in sheets:
+        total_records+=sheets[sheet_name].shape[0]
     writer = pd.ExcelWriter(os.path.join(output_path, 'youtube_output.xlsx'), engine='xlsxwriter')
+    current_finished_count=0
     for key, value in sheets.items():
         #sheets[key] = process_dataframe(value)
-        process_dataframe(value).to_excel(writer, sheet_name=key)
+        process_dataframe(value,current_finished_count,total_records,progress_callback).to_excel(writer, sheet_name=key)
+        current_finished_count+=value.shape[0]
         progress_callback.emit(int((i+1)*100/len(sheets)))
         i+=1
     writer.save()
