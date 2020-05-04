@@ -16,11 +16,17 @@ class BooksSpider(scrapy.Spider):
         self.search_base_p1=search_base_p1
         self.search_base_p2=search_base_p2
         book_names = []
+        book_ranks=[]
         df=current_df[0]
         if 'title' in df.columns:
             book_names=df['title'].str.replace('\xa0','').tolist()
         elif 'Title' in df.columns:
             book_names=df['Title'].str.replace('\xa0','').tolist()
+
+        if 'rank' in df.columns:
+            book_ranks=df['rank'].tolist()
+        elif 'Rank' in df.columns:
+            book_ranks=df['Rank'].tolist()
         print(book_names)
         # book_names=['Pride and Prejudice', 'Jane Eyre', 'The Picture of Dorian Gray', 'Wuthering Heights', 'Crime and Punishment',
         #  'Frankenstein', 'The Count of Monte Cristo', "Alice's Adventures in Wonderland & Through the Looking-Glass",
@@ -29,18 +35,23 @@ class BooksSpider(scrapy.Spider):
         # #legacy code
         # book_names = ['What Every BODY Is Saying: An Ex-FBI Agent’s Guide to Speed-Reading People',
         #              'Louder Than Words: Take Your Career from Average to Exceptional with the Hidden Power of Nonverbal Intelligence']
-        for names in book_names:
+        #for names in book_names:
+        for pos in range(len(book_names)):
+            names=book_names[pos]
+            rank=book_ranks[pos]
             if len(names)==0:
                 continue
             print(search_base_p1 + names + search_base_p2)
-            yield scrapy.Request(url=search_base_p1 + names.replace(' ','%20') + search_base_p2, callback=self.parse,cb_kwargs={'current_book':names})
+            yield scrapy.Request(url=search_base_p1 + names.replace(' ','%20') + search_base_p2, callback=self.parse,cb_kwargs={'current_book':names,'current_rank':rank})
                 
-    def parse(self, response, current_book):
+    def parse(self, response, current_book,current_rank):
         i=0
         #print('##'+current_book)
         while True:
             if i>20:
                 print('============================================\nPlease check book name and search again\n',i)
+                scrape_result[current_book] = {'Rank':current_rank}
+
                 return 0
             
             print('___________searching','data-index="'+str(i))
@@ -73,9 +84,9 @@ class BooksSpider(scrapy.Spider):
         book_page = book_link[link_start+1:link_end]
         base_link = "https://www.amazon.com/"
         book_page = base_link + book_page
-        yield scrapy.Request(book_page, callback=self.parse_book, cb_kwargs={'current_book':current_book})
+        yield scrapy.Request(book_page, callback=self.parse_book, cb_kwargs={'current_book':current_book,'current_rank':current_rank})
         
-    def parse_book(self, response, current_book):
+    def parse_book(self, response, current_book,current_rank):
         print('@@@'+response.url)
         book = {}
         title = response.css('span[class="a-size-extra-large"]::text').get()
@@ -103,17 +114,19 @@ class BooksSpider(scrapy.Spider):
                 price = html_data[price_idx:html_data.find('<',price_idx)]
                 price = price[:price.find('\n')]
                 all_prices[book_type] = price
-        
-        if len(all_prices)==0:
-            new_url = response.url
-            new_url_change_pos = new_url.find('com')
-            new_url = new_url[0:new_url_change_pos]+'in'+new_url[new_url_change_pos+3:]
-            yield scrapy.Request(new_url, callback=self.parse_book, cb_kwargs={'current_book':current_book})
+
+        # # Commented out due to incorrect behavior, please validate this part.
+        # if len(all_prices)==0:
+        #     new_url = response.url
+        #     new_url_change_pos = new_url.find('com')
+        #     new_url = new_url[0:new_url_change_pos]+'in'+new_url[new_url_change_pos+3:]
+        #     yield scrapy.Request(new_url, callback=self.parse_book, cb_kwargs={'current_book':current_book})
         
         else:    
             print('====================================\n',title,'\n',all_prices)
             print('====================================')
             all_prices['book_found']=title
+            all_prices['rank']=current_rank
             scrape_result[current_book] = all_prices
             return book
 
@@ -146,6 +159,7 @@ scrape_result={}
 
 def start_crawler(df_dict, output_path,progress_queue):
     print('asd')
+    progress_queue.put(1)
     tmp_r=[k for k in scrape_result]
     for key in tmp_r: del scrape_result[key]
 
@@ -171,14 +185,15 @@ def start_crawler(df_dict, output_path,progress_queue):
                 dfo = pd.DataFrame(index=range(current_df[0].shape[0]),columns=['Title','BookNameFound','Paperback','Audiobook','Hardcover','Kindle'])
                 i=0
                 for current_book_name in scrape_result:
-                    dfo.loc[i,'Title']=current_book_name
+                    rank=int(scrape_result[current_book_name]['rank'])-1
+                    dfo.loc[rank,'Title']=current_book_name
                     for book_price_type in scrape_result[current_book_name]:
                         if book_price_type not in dfo.columns:
                             continue
                         if book_price_type=='book_found':
-                            dfo.loc[i,'BookNameFound']=scrape_result[current_book_name][book_price_type].strip()
+                            dfo.loc[rank,'BookNameFound']=scrape_result[current_book_name][book_price_type].strip()
                         else:
-                            dfo.loc[i,book_price_type]=scrape_result[current_book_name][book_price_type].strip().replace('$','')
+                            dfo.loc[rank,book_price_type]=scrape_result[current_book_name][book_price_type].strip().replace('$','')
                     i+=1
                 #dfo.to_csv(output_path+'/amzout.csv')
                 dfo.to_excel(writer, sheet_name=sheet_name)
@@ -206,7 +221,5 @@ def start_crawler(df_dict, output_path,progress_queue):
         progress_queue.put((exctype, value))
     while not progress_queue.empty():
         progress_queue.get()
-    progress_percentage = int(100 * sheet_i / len(df_dict))
-    if progress_percentage == 100:
-        progress_percentage -= 1
-    progress_queue.put(progress_percentage)
+    #progress_percentage = int(100 * sheet_i / len(df_dict))
+    progress_queue.put(100)

@@ -11,7 +11,7 @@ def monitor_process_progress(status_queue,progress_callback):
             # else:
             #     progress_callback.emit(str(current_progress[1]))
             #     return
-            if not isinstance(current_progress,int):
+            if not isinstance(current_progress,int) or current_progress==100:
                 return
         time.sleep(2)
     progress_callback.emit(100)
