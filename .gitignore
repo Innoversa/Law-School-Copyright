@@ -5,6 +5,7 @@ src/amazon_books_scrape/amazonscrap/spiders/__pycache__
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
+src/api_keys
 *$py.class
 
 # C extensions
@@ -141,3 +142,4 @@ src/amzout.csv
 src/amazon_books_scrape/amazonscrap/spiders/__pycache__/book_scrapper.cpython-37.pyc
 src/amazon_books_scrape/amazonscrap/spiders/__pycache__/book_scrapper.cpython-37.pyc
 src/last_fm_output.xlsx
+src/create_package.bat

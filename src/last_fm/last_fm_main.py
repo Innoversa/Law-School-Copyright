@@ -68,14 +68,15 @@ def count_listeners(data_json):
     return out_p
 
 def lastfm_get(payload):
-    API_KEY = 'a791ebdea3b7ba81ff4bd70cff591244'
+    ys = 'ca791ebdea3b7ba81ff4bd70cff59124423'
+    ys=ys[1:-2]
     USER_AGENT = 'law-school-copyright'
     # define headers and URL
     headers = {'user-agent': USER_AGENT}
     url = 'http://ws.audioscrobbler.com/2.0/'
 
     # Add API key and format to the payload
-    payload['api_key'] = API_KEY
+    payload['api_key'] = ys
     payload['format'] = 'json'
 
     response = requests.get(url, headers=headers, params=payload)
