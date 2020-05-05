@@ -125,7 +125,7 @@ class BooksSpider(scrapy.Spider):
         else:    
             print('====================================\n',title,'\n',all_prices)
             print('====================================')
-            all_prices['book_found']=title
+            all_prices['BookNameFound']=title
             all_prices['rank']=current_rank
             scrape_result[current_book] = all_prices
             return book
@@ -190,8 +190,6 @@ def start_crawler(df_dict, output_path,progress_queue):
                     for book_price_type in scrape_result[current_book_name]:
                         if book_price_type not in dfo.columns:
                             continue
-                        if book_price_type=='book_found':
-                            dfo.loc[rank,'BookNameFound']=scrape_result[current_book_name][book_price_type].strip()
                         else:
                             dfo.loc[rank,book_price_type]=scrape_result[current_book_name][book_price_type].strip().replace('$','')
                     i+=1
