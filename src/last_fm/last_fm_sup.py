@@ -95,7 +95,7 @@ def jprint(obj):
     return text
 
 
-def perform_last_fm(data, current_finished_count,total_records):
+def perform_last_fm(data, current_finished_count,total_records,progress_callback):
     if 'Title' in data and 'Artist' in data:
         data = data.rename(columns={'Title': 'title', 'Artist': 'artist'})
     df = pd.DataFrame(data, columns=['title', 'artist'])
@@ -114,6 +114,8 @@ def perform_last_fm(data, current_finished_count,total_records):
     out_dict = {}
     i = 0
     for each in request_query:
+        if __name__ != "__main__":
+            progress_callback.emit(int(100 * (i+current_finished_count) / total_records))
         out_dict['artist'] = each['artist']
         out_dict['track'] = each['track']
         # print(each)
@@ -143,21 +145,23 @@ def perform_last_fm(data, current_finished_count,total_records):
             print(row)
     return out_df
 
-def perform_last_fm_s(data):
+def perform_last_fm_s(data, output_path, progress_callback):
     #1/0
     out_put = {}
     total_records = 0
     for sheet_name in data:
         total_records+=data[sheet_name].shape[0]
 
-    writer = pd.ExcelWriter('new_new_last_fm_output.xlsx', engine='xlsxwriter')
+    writer = pd.ExcelWriter(os.path.join(output_path,'new_new_last_fm_output.xlsx'), engine='xlsxwriter')
 
     current_finished_count=0
     for each in data:
         # print(data[each])
-        out_df = (perform_last_fm(data[each],current_finished_count,total_records))
+        out_df = (perform_last_fm(data[each],current_finished_count,total_records, progress_callback))
         out_df.to_excel(writer, sheet_name=each)
         current_finished_count += data[each].shape[0]
+    if __name__ != "__main__":
+        progress_callback.emit(100)
     writer.save()
     return 'Finished'
 
