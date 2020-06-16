@@ -11,7 +11,8 @@ import os
 from modules.thread_worker import Worker
 from yt_scrape.myYT import get_youtube_data
 from amazon_books_scrape.amazonscrap.spiders.book_scrapper import start_crawler
-from last_fm.last_fm_main import perform_last_fm_s
+#from last_fm.last_fm_main import perform_last_fm_s
+from last_fm.last_fm_sup import perform_last_fm_s
 from multiprocessing import Process, Queue
 import pandas as pd
 from modules.process_progress_monitor import monitor_process_progress
