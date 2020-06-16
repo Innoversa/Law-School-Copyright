@@ -96,8 +96,8 @@ def process_dataframe(df,current_finished_count,total_records,progress_callback)
             df.at[i,'videoID 1'] = response['items'][0]['id']['videoId']
             df.at[i,'Views 1'] = stats1[0]
             df.at[i,'Duration 1'] = formatTime(stats1[1])
-            df.at[i,'Thumbs Up 1'] = stats1[2]
-            df.at[i,'Thumbs Down 1'] = stats1[3]
+            df.at[i,'ikeCount 1'] = stats1[2]
+            df.at[i,'dilikeCount 1'] = stats1[3]
 
             vidId2 = response['items'][1]['id']['videoId']
             stats2 = get_video_stats(youtube, vidId2, apikey)
@@ -105,8 +105,8 @@ def process_dataframe(df,current_finished_count,total_records,progress_callback)
             df.at[i,'videoID 2'] = response['items'][1]['id']['videoId']
             df.at[i,'Views 2'] = stats2[0]
             df.at[i,'Duration 2'] = formatTime(stats2[1])
-            df.at[i,'Thumbs Up 2'] = stats2[2]
-            df.at[i,'Thumbs Down 2'] = stats2[3]
+            df.at[i,'ikeCount 2'] = stats2[2]
+            df.at[i,'dilikeCount 2'] = stats2[3]
 
             vidId3 = response['items'][2]['id']['videoId']
             stats3 = get_video_stats(youtube, vidId3, apikey)
@@ -114,8 +114,8 @@ def process_dataframe(df,current_finished_count,total_records,progress_callback)
             df.at[i,'videoID 3'] = response['items'][2]['id']['videoId']
             df.at[i,'Views 3'] = stats3[0]
             df.at[i,'Duration 3'] = formatTime(stats3[1])
-            df.at[i,'Thumbs Up 3'] = stats3[2]
-            df.at[i,'Thumbs Down 3'] = stats3[3]
+            df.at[i,'ikeCount 3'] = stats3[2]
+            df.at[i,'dilikeCount 3'] = stats3[3]
             index+=1
             progress_callback.emit(int(100 * (index+current_finished_count) / total_records))
     except Exception as e: print(e)
